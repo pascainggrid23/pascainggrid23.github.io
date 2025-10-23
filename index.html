@@ -547,6 +547,112 @@
         .photo-item:active {
             transform: scale(0.95);
         }
+		
+		.lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(255,255,255,0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            z-index: 1001;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            user-select: none;
+        }
+
+        .arrow:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .arrow-left {
+            left: 20px;
+        }
+
+        .arrow-right {
+            right: 20px;
+        }
+
+        .image-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+        }
 
         /* Wedding Gift */
         .wedding-gift {
@@ -764,7 +870,7 @@
             <div class="cover-to">Kepada Yth.</div>
             <div class="guest-name">Bapak/Ibu/Saudara/i</div>
             <button class="open-invitation-btn" onclick="openInvitation()">
-                <span>✉️</span> Buka Undangan Digital
+                <span>✉️</span> Buka Undangan
             </button>
         </div>
     </div>
@@ -925,13 +1031,7 @@
         <!-- Gallery -->
         <section class="gallery">
             <h2 class="section-title">Our Moments</h2>
-            <div class="photo-grid">
-                <div class="photo-item">📷</div>
-                <div class="photo-item">💑</div>
-                <div class="photo-item">💐</div>
-                <div class="photo-item">🌅</div>
-                <div class="photo-item">💕</div>
-                <div class="photo-item">🎉</div>
+            <div class="photo-grid" id="gallery">
             </div>
         </section>
 
@@ -987,6 +1087,16 @@
             </div>
             <div class="signature">Sarah & Daniel</div>
         </section>
+    </div>
+	
+	<div class="lightbox" id="lightbox">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <span class="arrow arrow-left" onclick="changeImage(-1)">&#10094;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Foto">
+        </div>
+        <span class="arrow arrow-right" onclick="changeImage(1)">&#10095;</span>
+        <div class="image-counter" id="counter"></div>
     </div>
 
     <script>
@@ -1186,7 +1296,78 @@
                 }
             }
         });
+		
+		/*PHOTO*/
+		const photos = [
+            'https://harmonious-jelly-241ff4.netlify.app/images/g1.jpg',
+			'https://harmonious-jelly-241ff4.netlify.app/images/g2.jpg',
+			'https://harmonious-jelly-241ff4.netlify.app/images/g3.jpg'
+        ];
+		
+		let currentIndex = 0;
+        const gallery = document.getElementById('gallery');
+		const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const counter = document.getElementById('counter');
+		
+		 // Buat gallery
+        photos.forEach((photo, index) => {
+            const item = document.createElement('div');
+            item.className = 'photo-item';
+            item.innerHTML = `<img width="250" height="250" src="${photo}" alt="Foto ${index + 1}">`;
+            item.onclick = () => openLightbox(index);
+            gallery.appendChild(item);
+        });
+		
+		function openLightbox(index) {
+            currentIndex = index;
+            lightboxImg.src = photos[currentIndex];
+            lightbox.classList.add('active');
+            updateCounter();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentIndex += direction;
+            
+            if (currentIndex < 0) {
+                currentIndex = photos.length - 1;
+            } else if (currentIndex >= photos.length) {
+                currentIndex = 0;
+            }
+            
+            lightboxImg.src = photos[currentIndex];
+            updateCounter();
+        }
+
+        function updateCounter() {
+            counter.textContent = `${currentIndex + 1} / ${photos.length}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft') {
+                changeImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeImage(1);
+            } else if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Close ketika klik di luar gambar
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
     </script>
 </body>
-
 </html>
