@@ -1299,9 +1299,7 @@
 		
 		/*PHOTO*/
 		const photos = [
-            'https://harmonious-jelly-241ff4.netlify.app/images/g1.jpg',
-			'https://harmonious-jelly-241ff4.netlify.app/images/g2.jpg',
-			'https://harmonious-jelly-241ff4.netlify.app/images/g3.jpg'
+            'https://img.freepik.com/vektor-gratis/desain-sketsa-rumah-menyeramkan-selamat-halloween_1035-19711.jpg?semt=ais_hybrid&w=740&q=80'
         ];
 		
 		let currentIndex = 0;
@@ -1314,7 +1312,7 @@
         photos.forEach((photo, index) => {
             const item = document.createElement('div');
             item.className = 'photo-item';
-            item.innerHTML = `<img width="250" height="250" src="${photo}" alt="Foto ${index + 1}">`;
+            item.innerHTML = `<img src="${photo}" alt="Foto ${index + 1}">`;
             item.onclick = () => openLightbox(index);
             gallery.appendChild(item);
         });
