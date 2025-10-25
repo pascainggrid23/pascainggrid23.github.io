@@ -101,6 +101,12 @@
             font-weight: bold;
             margin-bottom: 30px;
         }
+        .guest-welcome {
+            font-size: 24px;
+            color: #E3E4FA;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
 
         .open-invitation-btn {
             padding: 18px 50px;
@@ -492,30 +498,57 @@
             margin: 0 auto;
             line-height: 1.8;
         }
-
-        .rsvp-btn {
-            margin-top: 30px;
-            padding: 16px 50px;
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
+        #rsvp-container {
+            background: #D7BCE8;
+            border-radius: 20px;
+            box-shadow: 0  10px 40px rgba(0,0,0,0.05);
+            width: 90%;
+            max-width: 480px;
+            padding: 35px 20px;
+            margin: 0 auto;
+            text-align: center;
         }
-		
-		.rsvp-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
+        #rsvp-container h2 {
+             color: #9c8be6;
+             margin-bottom: 10px;
         }
-
-        .rsvp-btn:active {
-            transform: scale(0.95);
+        #rsvp-container p {
+             color: #777;
+             margin-bottom: 20px;
+        }
+        .rsvp-input, .rsvp-select, .rsvp-textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+         .rsvp-select {
+            appearance: none;
+            background-color: #fff;
+        }
+        button#submitBtn {
+         background-color:#F8BBD0;
+        color: #777;
+        border: none;
+        padding: 14px 0;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+        }
+        button#submitBtn:hover {
+            background-color: #be9bfa;
+        }
+        #successMsg {
+            display: none;
+            color: #28a745;
+            margin-top: 20px;
+            font-size: 1.1rem;
         }
 
         /* Gallery */
@@ -870,7 +903,8 @@
             <div class="cover-names">Pascario & Inggriani </div>
             <div class="cover-date">03 • 10 • 2026</div>
             <div class="cover-to">Dear</div>
-            <div class="guest-name">Bapak/Ibu/Saudara/i</div>
+            <div class="guest-name">Mr./Mrs./Ladies and Gentlemen</div>
+            <div class="guest-welcome">We cordially invite you to our wedding</div>
             <button class="open-invitation-btn" onclick="openInvitation()">
                 <span>✉️</span> Open Invitation
             </button>
@@ -1029,15 +1063,52 @@
         </section>
 
         <!-- RSVP -->
-        <section class="rsvp">
-            <h2 class="section-title">RSVP</h2>
-            <p>
-                Please kindly help us prepare everything better by confirming your attandance to our wedding event with the following RSVP form.<br>
-            </p>
-            <button class="rsvp-btn" onclick="confirmWhatsApp()">
-                <span style="font-size: 26px;">💬</span> Konfirmasi via WhatsApp
-            </button>
-        </section>
+         <div id="rsvp-container">
+             <h2>Reservartion</h2>
+            <p> Please kindly help us prepare everything better by confirming your attandance to our wedding event with the following RSVP form💌</p>
+
+            <form id="rsvpForm" action="https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=sharing&ouid=116968358812411751613" method="POST">
+                <input
+                    type="text"
+                    class="rsvp-input"
+                    name="entry.1829421316"
+                    placeholder="Name"
+                    required
+                 >
+                 <select
+                    class="rsvp-select"
+                    name="entry.1260849325"
+                    required
+                >
+                     <option value="" disabled selected>"Will You Attend?"</option>
+                    <option value="Ya">Yes</option>
+                    <option value="Tidak">No</option>
+                </select>
+
+                 <select
+                    class="rsvp-select"
+                     name="entry.978211710"
+                    required
+                >
+                      <option value="" disabled selected>No. of Guests</option>
+                     <option value="0">0</option>
+                      <option value="1">1</option>
+                     <option value="2">2</option>
+                </select>
+
+                <textarea
+                    class="rsvp-textarea"
+                    name="entry.331259842"
+                    rows="4"
+                    placeholder="Your Wishes for Us"
+                ></textarea>
+
+                <button type="submit" id="submitBtn">Submit</button>
+            </form>
+
+            <p id="successMsg">Thank You! Your RSVP Already sent. See you soon 💞</p>
+     </div>
+
 
         <!-- Gallery -->
         <section class="gallery">
@@ -1254,12 +1325,24 @@
             showToast('✅ Link kalender dibuka!');
         }
 
-        // Confirm via WhatsApp
-        function confirmWhatsApp() {
-            const message = `Halo Pascario & Inggriani! 🎉\n\nSaya ingin konfirmasi kehadiran untuk acara pernikahan kalian.\n\nNama: [Isi nama Anda]\nJumlah tamu: [Isi jumlah]\nKehadiran: [Hadir/Tidak Hadir]\n\nTerima kasih! 💕`;
-            const whatsappUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        }
+        // Kirim RSVP
+        
+        const form = document.getElementById('rsvpForm');
+        const msg = document.getElementById('successMsg');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                mode: 'no-cors'
+            }).then(() => {
+                 form.reset();
+                msg.style.display = 'block';
+             }).catch(() => {
+                  alert('Gagal mengirim RSVP. Silakan coba lagi nanti.');
+            });
+        });
 
         // Copy to Clipboard	
 		function copyToClipboard(elementId, button) {
