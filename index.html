@@ -1151,9 +1151,9 @@
                         a.n. Inggriani Priscilia
                     </div>
 					<div >
-						<input readonly class="account-number" type="text" id="bankAccount" value="000026705343000" style="border: none;outline: none; text-align: center; pointer-events: none;">
+						<input readonly class="account-number" type="text" id="bankAccount1" value="000026705343000" style="border: none;outline: none; text-align: center; pointer-events: none;">
 					</div>
-                    <button class="copy-btn" onclick="copyToClipboard('bankAccount', this)">
+                    <button class="copy-btn" onclick="copyToClipboard('bankAccount1', this)">
                         <span>📋</span> Copy account number
                     </button>
                 </div>
@@ -1319,7 +1319,7 @@
             const startDate = new Date(event.startDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
             const endDate = new Date(event.endDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
             
-            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+            const calendarUrl = `https://calendar.app.google/DQeAsPWxMPUjkzGr5=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
             
             window.open(calendarUrl, '_blank');
             showToast('✅ Link kalender dibuka!');
