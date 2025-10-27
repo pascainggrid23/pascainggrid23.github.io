@@ -13,7 +13,8 @@
 
         body {
             font-family: 'Georgia', serif;
-            background: linear-gradient(to bottom, #E0B0FF, #B0E0E6);
+            /*background: linear-gradient(to bottom, #E0B0FF, #B0E0E6);*/
+			background-image: url('https://harmonious-jelly-241ff4.netlify.app/images/background2.jpg');
             color: #4a4a4a;
             overflow-x: hidden;
         }
@@ -25,7 +26,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(198, 160, 217, 0.95), rgba(255, 182, 193, 0.95));
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -33,12 +33,25 @@
             align-items: center;
             transition: opacity 0.8s ease, visibility 0.8s ease;
             padding: 20px;
+			background-image: url('https://harmonious-jelly-241ff4.netlify.app/images/background1.jpg');
+			background-size: cover;
+			background-position: center;
         }
 
         .cover-overlay.hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
+        }
+		
+		.cover-container {
+            background: white;
+            border: 1px solid #e6d9f0;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 0 auto;
+			margin-bottom : 10px;
+			background-color: rgba(0, 0, 0, 0.2);
         }
 
         .cover-content {
@@ -77,7 +90,7 @@
 
         .cover-names {
             font-size: 28px;
-            color: #B0E0E6;
+			color: #B0E0E6;
             font-family: 'Brush Script MT', cursive;
             margin: 20px 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
@@ -91,19 +104,13 @@
 
         .cover-to {
             font-size: 16px;
-            color: #FAF3C0;
+			color: #FAF3C0;
             margin-top: 30px;
             margin-bottom: 10px;
         }
 
         .guest-name {
             font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
-        .guest-welcome {
-            font-size: 24px;
-            color: #E3E4FA;
             font-weight: bold;
             margin-bottom: 30px;
         }
@@ -138,6 +145,7 @@
             box-shadow: 0 0 40px rgba(198, 160, 217, 0.3);
             opacity: 0;
             transition: opacity 0.8s ease 0.3s;
+			background-image: url('https://harmonious-jelly-241ff4.netlify.app/images/background2.jpg');
         }
 
         .container.visible {
@@ -248,7 +256,7 @@
 
         .hero h1 {
             font-size: 32px;
-            color: #d8a7d8;
+            color: #9370db;
             margin: 20px 0;
             line-height: 1.3;
         }
@@ -321,7 +329,7 @@
 
         .countdown-label {
             font-size: 16px;
-            color:#E6DAF0;
+            color: #E6DAF0;
             margin-top: 10px;
             text-transform: uppercase;
         }
@@ -329,7 +337,7 @@
         .congratulations-message {
             display: none;
             font-size: 24px;
-            color:#E0B0FF;
+            color: #E0B0FF;
             line-height: 1.8;
             padding: 30px 15px;
         }
@@ -498,57 +506,30 @@
             margin: 0 auto;
             line-height: 1.8;
         }
-        #rsvp-container {
-            background: #D7BCE8;
-            border-radius: 20px;
-            box-shadow: 0  10px 40px rgba(0,0,0,0.05);
-            width: 90%;
-            max-width: 480px;
-            padding: 35px 20px;
-            margin: 0 auto;
-            text-align: center;
+
+        .rsvp-btn {
+            margin-top: 30px;
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
-        #rsvp-container h2 {
-             color: #9c8be6;
-             margin-bottom: 10px;
+		
+		.rsvp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
         }
-        #rsvp-container p {
-             color: #777;
-             margin-bottom: 20px;
-        }
-        .rsvp-input, .rsvp-select, .rsvp-textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-         .rsvp-select {
-            appearance: none;
-            background-color: #fff;
-        }
-        button#submitBtn {
-         background-color:#F8BBD0;
-        color: #777;
-        border: none;
-        padding: 14px 0;
-        font-size: 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 15px;
-        transition: background-color 0.3s ease;
-        }
-        button#submitBtn:hover {
-            background-color: #be9bfa;
-        }
-        #successMsg {
-            display: none;
-            color: #28a745;
-            margin-top: 20px;
-            font-size: 1.1rem;
+
+        .rsvp-btn:active {
+            transform: scale(0.95);
         }
 
         /* Gallery */
@@ -892,19 +873,27 @@
                 flex-direction: row;
             }
         }
+		
+		@media (max-width: 480px) {
+            .photo-grid {
+                grid-template-columns: repeat(1, 1fr);
+                gap: 8px;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Cover Overlay - Tidak bisa skip -->
     <div class="cover-overlay" id="coverOverlay">
         <div class="cover-content">
-            <div class="cover-ornament">💐</div>
-            <div class="cover-title">The Wedding of</div>
-            <div class="cover-names">Pascario & Inggriani </div>
-            <div class="cover-date">03 • 10 • 2026</div>
-            <div class="cover-to">Dear</div>
-            <div class="guest-name">Mr./Mrs./Ladies and Gentlemen</div>
-            <div class="guest-welcome">We cordially invite you to our wedding</div>
+			<div class ="cover-container">
+				<div class="cover-ornament">💐</div>
+				<div class="cover-title">The Wedding of</div>
+				<div class="cover-names">Pascario & Inggriani </div>
+				<div class="cover-date">03 • 10 • 2026</div>
+				<div class="cover-to">Dear</div>
+				<div class="guest-name">Bapak/Ibu/Saudara/i</div>
+			</div>
             <button class="open-invitation-btn" onclick="openInvitation()">
                 <span>✉️</span> Open Invitation
             </button>
@@ -912,8 +901,10 @@
     </div>
 
     <!-- Music Control -->
-    <div class="music-control" id="musicControl" style="display: none;">
-        <span class="music-icon">🎵</span>
+    <div class="music-control" id="musicControl" onclick="playMusic()">
+		<svg class="music-icon" id="musicIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
     </div>
 
     <!-- Toast Notification -->
@@ -941,9 +932,9 @@
 
         <!-- Countdown Section -->
         <section class="countdown-section">
-            <h2 class="section-title">Save The Date</h2><br><br>
-                                        The clock was ticking so fast, between thrilling moments we had never felt before.<br>
-                                        We look forward to welcoming family and friends to witness our blessing vows on a happy day.<br>
+            <h2 class="section-title">Save The Date</h2></br>
+			The clock was ticking so fast, between thrilling moments we had never felt before.</br>
+			We look forward to welcoming family and friends to witness our blessing vows on a happy day.</br></br>
             <div class="countdown-container">
                 <div id="countdownDisplay" class="countdown">
                     <div class="countdown-item">
@@ -984,10 +975,12 @@
 
         <!-- Couple Profile -->
         <section class="couple-profile">
-            <h2 class="section-title">The Groom & Bride</h2><br><br>
+            <h2 class="section-title">The Groom & Bride</h2>
+			<div class="closing-message">
                             Ecclesiates 4:9-10 (NIV) <br>
                                 "Two are better than one, because they have a good return for their labor;<br>
                                 if either of them falls down, one can help the other up. But pity anyone who falls and has no one to help them up."
+			</div>					
             <div class="profiles">
                 <div class="profile-card">
                     <div class="profile-photo">🤵</div>
@@ -996,7 +989,7 @@
                         The Son Of:<br>
                         Mr. Sri Hutomo<br>
                         &<br>
-                        Mrs. Yunitriwati
+                        Mrs. Yuni Triwati
                     </div>
                 </div>
                 
@@ -1015,10 +1008,12 @@
 
         <!-- Event Details -->
         <section class="event-details">
-            <h2 class="section-title">Wedding Vanue</h2><br><br>
+            <h2 class="section-title">Wedding Vanue</h2>
+				<div class="closing-message">
                                     Matthew 19:6 (NIV) <br>
                                     "So they are no longer two, but one flesh.<br>
                                     Therefore what God has joined together, let no one separate."<br>
+				</div>					
             <div class="events">
                 <div class="event-card">
                     <div class="event-type">Holy Matrymony</div>
@@ -1034,7 +1029,7 @@
                         <a href="https://maps.app.goo.gl/rNNG5k1Gm4v121Wk9" target="_blank" class="btn btn-map">
                             <span>🗺️</span> Location
                         </a>
-                        <button onclick="addToCalendar('Holy Matrymony')" class="btn btn-calendar">
+                        <button onclick="addToCalendar('akad')" class="btn btn-calendar">
                             <span>📅</span> Save the Date
                         </button>
                     </div>
@@ -1054,7 +1049,7 @@
                         <a href="https://maps.google.com/?q=Hotel+Mulia+Jakarta" target="_blank" class="btn btn-map">
                             <span>🗺️</span> Location
                         </a>
-                        <button onclick="addToCalendar('Family Dinner')" class="btn btn-calendar">
+                        <button onclick="addToCalendar('resepsi')" class="btn btn-calendar">
                             <span>📅</span> Save the Date
                         </button>
                     </div>
@@ -1063,58 +1058,23 @@
         </section>
 
         <!-- RSVP -->
-         <div id="rsvp-container">
-             <h2>Reservartion</h2>
-            <p> Please kindly help us prepare everything better by confirming your attandance to our wedding event with the following RSVP form💌</p>
-
-            <form id="rsvpForm" action="https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=sharing&ouid=116968358812411751613" method="POST">
-                <input
-                    type="text"
-                    class="rsvp-input"
-                    name="entry.1829421316"
-                    placeholder="Name"
-                    required
-                 >
-                 <select
-                    class="rsvp-select"
-                    name="entry.1260849325"
-                    required
-                >
-                     <option value="" disabled selected>"Will You Attend?"</option>
-                    <option value="Ya">Yes</option>
-                    <option value="Tidak">No</option>
-                </select>
-
-                 <select
-                    class="rsvp-select"
-                     name="entry.978211710"
-                    required
-                >
-                      <option value="" disabled selected>No. of Guests</option>
-                     <option value="0">0</option>
-                      <option value="1">1</option>
-                     <option value="2">2</option>
-                </select>
-
-                <textarea
-                    class="rsvp-textarea"
-                    name="entry.331259842"
-                    rows="4"
-                    placeholder="Your Wishes for Us"
-                ></textarea>
-
-                <button type="submit" id="submitBtn">Submit</button>
-            </form>
-
-            <p id="successMsg">Thank You! Your RSVP Already sent. See you soon 💞</p>
-     </div>
-
+        <section class="rsvp">
+            <h2 class="section-title">RSVP</h2>
+            <p>
+                Please kindly help us prepare everything better by confirming your attandance to our wedding event with the following RSVP form.<br>
+            </p>
+            <button class="rsvp-btn" onclick="confirmGoogleForm()">
+                <span style="font-size: 26px;">💬</span> Konfirmasi via Google Form
+            </button>
+        </section>
 
         <!-- Gallery -->
         <section class="gallery">
-            <h2 class="section-title">Our Moments</h2><br><br>
+            <h2 class="section-title">Our Moments</h2>
+				<div class="closing-message">
                                     1 John 4:19 (NIV) <br>
                                     "We love because God first loved us"<br>
+				</div>
             <div class="photo-grid" id="gallery">
             </div>
         </section>
@@ -1151,9 +1111,9 @@
                         a.n. Inggriani Priscilia
                     </div>
 					<div >
-						<input readonly class="account-number" type="text" id="bankAccount1" value="000026705343000" style="border: none;outline: none; text-align: center; pointer-events: none;">
+						<input readonly class="account-number" type="text" id="emoney" value="000026705343000" style="border: none;outline: none; text-align: center; pointer-events: none;">
 					</div>
-                    <button class="copy-btn" onclick="copyToClipboard('bankAccount1', this)">
+                    <button class="copy-btn" onclick="copyToClipboard('emoney', this)">
                         <span>📋</span> Copy account number
                     </button>
                 </div>
@@ -1164,8 +1124,6 @@
         <section class="closing">
             <h2 class="section-title">Thank You</h2>
             <div class="closing-message">
-                Thank You<br><br>
-                
                 We are deeply grateful for your prayers, love, and support as we step into this new chapter of our lives.<br><br>
 
                 We will be looking forward to your presence on our wonderful day!! <br><br>
@@ -1239,9 +1197,9 @@
             }, 300);
             
             // Auto play musik
-            setTimeout(() => {
-                playMusic();
-            }, 800);
+            music.play();
+			isPlaying = true;
+			musicControl.classList.add('playing');
             
             // Scroll ke atas halaman utama
             setTimeout(() => {
@@ -1266,20 +1224,25 @@
         // Musik Control
         function playMusic() {
             if (!isPlaying) {
+			console.log('play');
                 music.play().then(() => {
-                    isPlaying = true;
                     musicControl.classList.add('playing');
+					musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
                 }).catch(err => console.log('Auto-play prevented'));
-            }
+            }else{
+				musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2"/>';
+				music.pause();
+				console.log('pause');
+			}
         }
 
         musicControl.addEventListener('click', function() {
             if (isPlaying) {
-                music.pause();
+                
                 isPlaying = false;
                 musicControl.classList.remove('playing');
             } else {
-                music.play();
+                
                 isPlaying = true;
                 musicControl.classList.add('playing');
             }
@@ -1319,30 +1282,20 @@
             const startDate = new Date(event.startDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
             const endDate = new Date(event.endDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
             
-            const calendarUrl = `https://calendar.app.google/DQeAsPWxMPUjkzGr5=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+            //const calendarUrl = `https://calendar.app.google/DQeAsPWxMPUjkzGr5=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
             
+			
             window.open(calendarUrl, '_blank');
             showToast('✅ Link kalender dibuka!');
         }
 
-        // Kirim RSVP
-        
-        const form = document.getElementById('rsvpForm');
-        const msg = document.getElementById('successMsg');
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                mode: 'no-cors'
-            }).then(() => {
-                 form.reset();
-                msg.style.display = 'block';
-             }).catch(() => {
-                  alert('Gagal mengirim RSVP. Silakan coba lagi nanti.');
-            });
-        });
+        // Confirm via WhatsApp
+        function confirmGoogleForm() {
+            //const message = `Halo Pascario & Inggriani! 🎉\n\nSaya ingin konfirmasi kehadiran untuk acara pernikahan kalian.\n\nNama: [Isi nama Anda]\nJumlah tamu: [Isi jumlah]\nKehadiran: [Hadir/Tidak Hadir]\n\nTerima kasih! 💕`;
+            const whatsappUrl = `https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=header`;
+            window.open(whatsappUrl, '_blank');
+        }
 
         // Copy to Clipboard	
 		function copyToClipboard(elementId, button) {
@@ -1398,7 +1351,9 @@
 		
 		/*PHOTO*/
 		const photos = [
-            'https://img.freepik.com/vektor-gratis/desain-sketsa-rumah-menyeramkan-selamat-halloween_1035-19711.jpg?semt=ais_hybrid&w=740&q=80'
+            'https://harmonious-jelly-241ff4.netlify.app/images/g1.jpg',
+			'https://harmonious-jelly-241ff4.netlify.app/images/g2.jpg',
+			'https://harmonious-jelly-241ff4.netlify.app/images/g3.jpg'
         ];
 		
 		let currentIndex = 0;
@@ -1411,7 +1366,7 @@
         photos.forEach((photo, index) => {
             const item = document.createElement('div');
             item.className = 'photo-item';
-            item.innerHTML = `<img src="${photo}" alt="Foto ${index + 1}">`;
+            item.innerHTML = `<img width="250" height="250" src="${photo}" alt="Foto ${index + 1}">`;
             item.onclick = () => openLightbox(index);
             gallery.appendChild(item);
         });
@@ -1468,3 +1423,4 @@
     </script>
 </body>
 </html>
+
