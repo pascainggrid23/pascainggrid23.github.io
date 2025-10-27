@@ -560,7 +560,7 @@
 
         .photo-item {
             aspect-ratio: 1;
-            background: linear-gradient(135deg, #e6d9f0, #ffd6e0);
+            background: linear-gradient(135deg, #c6a0d9, #ffb6c1);
             border-radius: 15px;
             display: flex;
             align-items: center;
@@ -643,7 +643,7 @@
         }
 
         .arrow {
-            position: absolute;
+            position: fixed;
             top: 50%;
             transform: translateY(-50%);
             font-size: 50px;
@@ -658,6 +658,7 @@
             justify-content: center;
             transition: background 0.3s ease;
             user-select: none;
+			z-index: 1002
         }
 
         .arrow:hover {
@@ -1342,11 +1343,11 @@
 			element.setSelectionRange(0, 99999); // untuk mobile
 			document.execCommand("copy");
 			button.classList.add('copied');
-            button.innerHTML = '<span>✓</span> Berhasil Disalin!';
-            showToast('✅ Nomor berhasil disalin!');
+            button.innerHTML = '<span>✓</span> Copied Successfully!';
+            showToast('✅ Number copied successfully!');
 			setTimeout(() => {
                     button.classList.remove('copied');
-                    button.innerHTML = '<span>📋</span> Salin Nomor ' + (elementId === 'bankAccount' ? 'Rekening' : 'WhatsApp');
+                    button.innerHTML = '<span>📋</span> Copy account number';
             }, 2000);
         }
 
@@ -1404,7 +1405,7 @@
         photos.forEach((photo, index) => {
             const item = document.createElement('div');
             item.className = 'photo-item';
-            item.innerHTML = `<img width="250" height="250" src="${photo}" alt="Foto ${index + 1}">`;
+            item.innerHTML = `<img width="260" height="270" src="${photo}" alt="Foto ${index + 1}" style="border-radius: 15px">`;
             item.onclick = () => openLightbox(index);
             gallery.appendChild(item);
         });
