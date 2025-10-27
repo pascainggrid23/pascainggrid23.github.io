@@ -513,15 +513,15 @@
         }
 
         .rsvp p {
-            font-size: 16px;
-            color: #666;
+            font-size: 17px;
             max-width: 100%;
             margin: 0 auto;
             line-height: 1.8;
+			
         }
 
         .rsvp-btn {
-            margin-top: 30px;
+            margin-top: 10px;
             padding: 16px 50px;
             background: linear-gradient(135deg, #25d366, #128c7e);
             color: white;
@@ -533,7 +533,6 @@
             box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
             display: inline-flex;
             align-items: center;
-            gap: 12px;
         }
 		
 		.rsvp-btn:hover {
@@ -1005,7 +1004,7 @@
 			<section class="couple-profile">
 				<h2 class="section-title">The Groom & Bride</h2>
 				<div class="closing-message">
-								Ecclesiates 4:9-10 (NIV) <br>
+								Ecclesiates 4:9-10 (NIV) </br>
 									"Two are better than one, because they have a good return for their labor;<br>
 									if either of them falls down, one can help the other up. But pity anyone who falls and has no one to help them up."
 				</div>					
@@ -1015,7 +1014,7 @@
 						<div class="profile-name">Pascario Tri Yudanto</div>
 						<div class="profile-parent">
 							The Son Of:<br>
-							Mr. Sri Hutomo<br>
+							Mr. Sri Hutomo</br>
 							&<br>
 							Mrs. Yuni Triwati
 						</div>
@@ -1026,7 +1025,7 @@
 						<div class="profile-name">Inggriani Priscilia</div>
 						<div class="profile-parent">
 							The Daughter Of:<br>
-							Mr. Rudy Sendjaja<br>
+							Mr. Rudy Sendjaja</br>
 							&<br>
 							Mrs. Sarah Thomas
 						</div>
@@ -1040,7 +1039,7 @@
 			<section class="event-details">
 				<h2 class="section-title">Wedding Vanue</h2>
 					<div class="closing-message">
-										Matthew 19:6 (NIV) <br>
+										Matthew 19:6 (NIV) </br>
 										"So they are no longer two, but one flesh.<br>
 										Therefore what God has joined together, let no one separate."<br>
 					</div>					
@@ -1049,11 +1048,11 @@
 						<div class="event-type">Holy Matrymony</div>
 						<div class="event-info">
 							<span>🗓️</span>
-							<div>03 Oktober 2026<br>Pukul 13.00 WIB</div>
+							<div>03 Oktober 2026</br>Pukul 13.00 WIB</div>
 						</div>
 						<div class="event-info">
 							<span>📍</span>
-							<div>GKI Gunung Sahari<br>Jakarta Pusat</div>
+							<div>GKI Gunung Sahari</br>Jakarta Pusat</div>
 						</div>
 						<div class="action-buttons">
 							<a href="https://maps.app.goo.gl/rNNG5k1Gm4v121Wk9" target="_blank" class="btn btn-map">
@@ -1069,11 +1068,11 @@
 						<div class="event-type">Family Dinner</div>
 						<div class="event-info">
 							<span>🗓️</span>
-							<div>03 Oktober 2026<br>Pukul 18.00 - 21.00 WIB</div>
+							<div>03 Oktober 2026</br>Pukul 18.00 - 21.00 WIB</div>
 						</div>
 						<div class="event-info">
 							<span>📍</span>
-							<div>Grand Ballroom Hotel Mulia<br>Jakarta</div>
+							<div>Grand Ballroom Hotel Mulia</br>Jakarta</div>
 						</div>
 						<div class="action-buttons">
 							<a href="https://maps.google.com/?q=Hotel+Mulia+Jakarta" target="_blank" class="btn btn-map">
@@ -1091,12 +1090,19 @@
         <!-- RSVP -->
 		<div class="all-background">
 			<section class="rsvp">
-				<h2 class="section-title">RSVP</h2>
+				<h2 class="section-title">RSVP & Streaming</h2>
 				<p>
-					Please kindly help us prepare everything better by confirming your attandance to our wedding event with the following RSVP form.<br>
+					Please kindly help us prepare everything better by confirming your attandance to our wedding event with the following RSVP form.
 				</p>
 				<button class="rsvp-btn" onclick="confirmGoogleForm()">
-					<span style="font-size: 26px;">💬</span> Konfirmasi via Google Form
+					<span style="font-size: 26px;">💬</span> Confirmation via Google Form
+				</button>
+				</br></br></br>
+				<p>
+					Share our joy from wherever you are! Click the button below to watch our wedding ceremony live.
+				</p>
+				<button class="rsvp-btn" onclick="streaming()">
+					<span style="font-size: 26px;">📺</span> Live!
 				</button>
 			</section>
 		</div>
@@ -1106,7 +1112,7 @@
 			<section class="gallery">
 				<h2 class="section-title">Our Moments</h2>
 					<div class="closing-message">
-										1 John 4:19 (NIV) <br>
+										1 John 4:19 (NIV) </br>
 										"We love because God first loved us"<br>
 					</div>
 				<div class="photo-grid" id="gallery">
@@ -1120,7 +1126,7 @@
 				<h2 class="section-title">Wedding Gift</h2>
 				<p>
 					Your blessing and coming to our wedding are enough for us.<br>
-					However, if you want to give a give we provide a Digital Envelope to make it easier for you.<br>
+					However, if you want to give a gift, we provide a Digital Envelope to make it easier for you.<br>
 					Thank You
 				</p>
 				<div class="gift-cards">
@@ -1335,6 +1341,12 @@
             const whatsappUrl = `https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=header`;
             window.open(whatsappUrl, '_blank');
         }
+		
+		// Confirm via WhatsApp
+        function streaming() {
+			const streaming = `https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=header`;
+            window.open(streaming, '_blank');
+        }
 
         // Copy to Clipboard	
 		function copyToClipboard(elementId, button) {
@@ -1405,7 +1417,7 @@
         photos.forEach((photo, index) => {
             const item = document.createElement('div');
             item.className = 'photo-item';
-            item.innerHTML = `<img width="260" height="270" src="${photo}" alt="Foto ${index + 1}" style="border-radius: 15px">`;
+            item.innerHTML = `<img width="270" height="270" src="${photo}" alt="Foto ${index + 1}" style="border-radius: 15px">`;
             item.onclick = () => openLightbox(index);
             gallery.appendChild(item);
         });
