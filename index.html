@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Wedding of Pascario & Inggriani </title>
     <style>
-		@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap&family=Baskervville');
         * {
             margin: 0;
             padding: 0;
@@ -13,10 +13,11 @@
         }
 
         body {
-			background-image: url('https://raw.githubusercontent.com/pascainggrid23/pascainggrid23.github.io/refs/heads/main/Images/background1.jpg');
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             /*background: linear-gradient(to bottom, #E0B0FF, #B0E0E6);
             color: #4a4a4a;*/
             overflow-x: hidden;
+			font-family: 'Baskervville', serif;
         }
 
         /* Overlay Cover - Tidak bisa skip */
@@ -157,18 +158,7 @@
         .open-invitation-btn:active {
             transform: scale(0.95);
         }
-		
-		.container {
-			max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-            position: relative;
-            z-index: 2;
-			box-shadow: 0 0 40px rgba(198, 160, 217, 0.3);
-        }
-		/* 
+
         .container {
             max-width: 100%;
             margin: 0 auto;
@@ -176,9 +166,7 @@
             box-shadow: 0 0 40px rgba(198, 160, 217, 0.3);
             opacity: 0;
             transition: opacity 0.8s ease 0.3s;
-			background-image: url('https://raw.githubusercontent.com/pascainggrid23/pascainggrid23.github.io/refs/heads/main/Images/background2.jpg');
         }
-		*/
 
         .container.visible {
             opacity: 1;
@@ -187,8 +175,8 @@
         /* Music Control */
         .music-control {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 20px;
             width: 60px;
             height: 60px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -226,7 +214,6 @@
 
         /* Halaman Pembuka */
 		.all-background{
-			border-radius: 25px;
 			background-size: cover;   /* gambar mengikuti ukuran div tanpa terdistorsi */
 			background-position: center;
 			background-repeat: no-repeat;
@@ -247,7 +234,6 @@
             align-items: center;
             overflow: hidden;
             padding: 20px;
-			border-radius: inherit;
         }
 
         .flower {
@@ -335,24 +321,14 @@
         }
 
         /* Section Styles */
-		section {
+        section {
             padding: 60px 25px;
             text-align: center;
-        }
-		
-        .section {
-			overflow: hidden;
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 50px 30px;
-            margin: 15px 0;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 0.8s ease;
         }
 
         .section-title {
             font-family: 'Playfair Display', serif;
-            font-size: 36px;
+            font-size: 30px;
             font-weight: 700;
             text-align: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -431,7 +407,6 @@
         .story-content {
             max-width: 100%;
             margin: 0 auto;
-            font-family: 'Baskervville';
             line-height: 1.8;
             font-size: 18px;
         }
@@ -480,12 +455,15 @@
             font-size: 24px;
             color: #9370db;
             margin: 15px 0;
+			font-weight: bold;
         }
 
         .profile-parent {
-            font-size: 15px;
+            font-size: 16px;
             color: #888;
             line-height: 1.6;
+			
+			font-weight: bold;
         }
 
         /* Event Details */
@@ -865,12 +843,15 @@
 
         /* Closing */
         .closing {
-			border-radius: 25px;
             background: linear-gradient(135deg, #c6a0d9, #ffb6c1);
             color: white;
             padding: 70px 30px;
 			opacity: 0.9;
-            
+            min-height:50vh;
+			display: flex;
+            flex-direction: column;
+			justify-content: center;
+			align-items: center;
         }
 
         .closing .section-title {
@@ -1002,6 +983,14 @@
 				text-align: center;
 				padding: 5px;
 			}
+			
+			.dear {
+                font-size: 30px;
+            }
+			
+			.hero-names {
+                font-size: 48px;
+            }
         }
     </style>
 </head>
@@ -1036,19 +1025,20 @@
 
     <!-- Audio Element -->
     <audio id="bgMusic" loop>
-        <source src="https://cdn.pixabay.com/audio/2025/10/20/audio_68e7b58af2.mp3" type="audio/mpeg">
+        <source src="https://cs1.mp3.pm/download/138525260/OHlRU3V4TFMzR1ZOSmhIUkZwWVd2ZnlYdmljRE5nYVdvWDVhQXhJUVRtR1JvS2EwcW4rWmZZMWFjbnF0cko4YXU0SjY0UWNjYmpKTGU1a3JJcUZXK2RzSlZ0Q2tFNTJlaFZUbkgrbFBpNmVLN2hKc1JodGJaNmdYcm56Y2l0V1Q/T._Carter_Music_-_All_of_the_Above-VoxPiano_(mp3.pm).mp3" type="audio/mpeg">
     </audio>
 
     <div class="container" id="mainContainer">
         <!-- Halaman Pembuka -->
 		<div class="all-background">
-			<div class="section opening">
+			<div class="opening">
 				<div class="flower flower1">🌷</div>
 				<div class="flower flower2">🌸</div>
 				<div class="flower flower3">🌺</div>
 				<div class="flower flower4">🌷</div>
 				<div class="hero-content">
-					<div class="dear">Dear Beloved Family & Friends</div>
+					<div class="dear">Dear Beloved</div>
+					<div class="dear">Family & Friends</div>
 					<h1>The Wedding of</h1>
 					<div class="hero-names">Pascario & Inggriani</div>
 					<div class="hero-date">03 • 10 • 2026</div>
@@ -1059,31 +1049,30 @@
 
         <!-- Countdown Section -->
 		<div class="all-background">
-			<section class="section hero">
+			<section class="hero">
 				<h2 class="section-title">Countdown to Our Special Day</h2></br>
 				<div class="story-content">
-					
-					<div class="countdown-container">
-							<div id="countdownDisplay" class="countdown">
-								<div class="countdown-item">
-									<span class="countdown-number" id="days">00</span>
-									<span class="countdown-label"><b>Days</b></span>
-								</div>
-								<div class="countdown-item">
-									<span class="countdown-number" id="hours">00</span>
-									<span class="countdown-label"><b>Hours</b></span>
-								</div>
-								<div class="countdown-item">
-									<span class="countdown-number" id="minutes">00</span>
-									<span class="countdown-label"><b>Minutes</b></span>
-								</div>
-								<div class="countdown-item">
-									<span class="countdown-number" id="seconds">00</span>
-									<span class="countdown-label"><b>Seconds</b></span>
-								</div>
-							</div>
-					</div>
 					<p>The clock was ticking so fast, between thrilling moments we had never felt before.</p>
+					<div class="countdown-container">
+						<div id="countdownDisplay" class="countdown">
+							<div class="countdown-item">
+								<span class="countdown-number" id="days">00</span>
+								<span class="countdown-label"><b>Days</b></span>
+							</div>
+							<div class="countdown-item">
+								<span class="countdown-number" id="hours">00</span>
+								<span class="countdown-label"><b>Hours</b></span>
+							</div>
+							<div class="countdown-item">
+								<span class="countdown-number" id="minutes">00</span>
+								<span class="countdown-label"><b>Minutes</b></span>
+							</div>
+							<div class="countdown-item">
+								<span class="countdown-number" id="seconds">00</span>
+								<span class="countdown-label"><b>Seconds</b></span>
+							</div>
+						</div>
+					</div>
 					<p>We look forward to welcoming family and friends to witness our blessing vows on a happy day.</p>
 				</div>
 			</section>
@@ -1091,21 +1080,21 @@
 
         <!-- Love Story -->
 		<div class="all-background">
-			<section class="section hero">
+			<section class="hero">
 				<h2 class="section-title">Our Love Story</h2>
-				<div class="story-content">
+				<div class="story-content" style="text-align: justify;">
 					<p>God brought us together in His extraordinary way. We didn't come from the same community, the same workplace, or even the same circle of friends.</p>
 					
 					<p>God introduced you and me in a place we never would have imagined, yet He allowed it all to happen. Meeting after meeting, argument after argument, until love and trust began to grow between us. Even when we reached the point of wanting to give up, God continued to shape us into the couple He has prepared before Him.</p>
 					
-					<p>So that we are allowed by Him to walk toward the purpose He has prepared for us- to become a family that fears the Lord and walks together with Him.</p>
+					<p>So that we are allowed by Him to walk toward the purpose He has prepared for us to become a family that fears the Lord and walks together with Him.</p>
 				</div>
 			</section>
 		</div>
 
         <!-- Couple Profile -->
 		<div class="all-background">
-			<section class="section hero">
+			<section class="hero">
 				<h2 class="section-title">The Groom & Bride</h2>
 				<div class="closing-message">
 								Ecclesiates 4:9-10 (NIV) </br>
@@ -1120,7 +1109,7 @@
 							The Son Of:<br>
 							Mr. Sri Hutomo</br>
 							&<br>
-							Mrs. Yunitriwati
+							Mrs. Yuni Triwati
 						</div>
 					</div>
 					
@@ -1137,10 +1126,10 @@
 				</div>
 			</section>
 		</div>
- 
+
         <!-- Event Details -->
 		<div class="all-background">
-			<section class="section hero">
+			<section class="hero">
 				<h2 class="section-title">Wedding Venue</h2>
 					<div class="closing-message">
 										Matthew 19:6 (NIV) </br>
@@ -1193,7 +1182,7 @@
 
         <!-- RSVP -->
 		<div class="all-background">
-			<section class="section hero">
+			<section class="hero">
 				<h2 class="section-title">RSVP & Streaming</h2>
 				<div class="story-content">
 					<p>
@@ -1228,12 +1217,11 @@
 
         <!-- Wedding Gift -->
 		<div class="all-background">
-			<section class="section hero">
+			<section class="hero">
 				<h2 class="section-title">Wedding Gift</h2>
 				<div class="story-content">
 					<p>
-						Your blessing and coming to our wedding are enough for us.<br>
-						However, if you want to give a gift, we provide a Digital Envelope to make it easier for you.
+						Your blessing and coming to our wedding are enough for us. However, if you want to give a gift, we provide a Digital Envelope to make it easier for you.
 					</p>
 				</div>
 				<div class="gift-cards">
