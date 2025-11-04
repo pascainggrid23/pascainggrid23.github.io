@@ -1022,11 +1022,16 @@
         }
 		
 		/*SLIDER*/
+		@supports (height: 100dvh) {
+            .slider-container {
+                height: 100dvh;
+            }
+        }
+		
 		.slider-container {
             position: relative;
             width: 100%;
             height: 100vh;
-            min-height: -webkit-fill-available;
             overflow: hidden;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
