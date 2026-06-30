@@ -2658,10 +2658,11 @@
                 const res = await fetch(GAS_URL);
                 const data = await res.json();
                 const items = Array.isArray(data) ? data : (data.records || []);
-                renderWishes(items.slice().reverse());
+                demoWishes = items.slice().reverse();
+                renderWishes(demoWishes);
             } catch (e) {
-                const list = document.getElementById('wishesList');
-                if (list) list.innerHTML = '<div class="wishes-empty">Failed to load wishes. Please refresh the page.</div>';
+                // CORS or network error — show locally buffered wishes
+                renderWishes(demoWishes);
             }
         }
 
@@ -2693,13 +2694,18 @@
             }
 
             try {
-                // Use text/plain to avoid CORS preflight issues with Apps Script
+                // mode: 'no-cors' avoids the CORS preflight/response-header issue with
+                // Google Apps Script. The response is opaque (unreadable) but the POST
+                // still reaches the server and saves the entry to Google Sheets.
                 await fetch(GAS_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(entry)
                 });
-                await loadWishes();
+                // Optimistically display the new wish locally (server save assumed ok)
+                demoWishes.unshift({ nama: entry.nama, kehadiran: entry.kehadiran, pesan: entry.pesan, waktu: entry.time });
+                renderWishes(demoWishes);
                 afterWishSent(nameEl, msgEl, btn);
             } catch (err) {
                 if (btn) { btn.disabled = false; btn.innerHTML = '<span>🙏</span> Send Wishes & Prayers'; }
