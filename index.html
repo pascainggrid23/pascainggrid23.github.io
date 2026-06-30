@@ -1747,23 +1747,7 @@
         };
         // ======= AKHIR KONFIGURASI =======
 
-        // Invitee name from ?to= URL parameter
-        (function() {
-            const params = new URLSearchParams(window.location.search);
-            const toName = (params.get('to') || '').trim();
-            const guestNameEl = document.querySelector('.guest-name');
-            if (!guestNameEl) return;
-            if (toName) {
-                const inviteeEl = document.createElement('div');
-                inviteeEl.className = 'invitee-name';
-                inviteeEl.textContent = toName;
-                guestNameEl.insertAdjacentElement('afterend', inviteeEl);
-            } else {
-                guestNameEl.remove();
-            }
-        })();
-
-        // Show Family Dinner card, RSVP title and buttons only on /full path
+        // Restore SPA redirect path (must run before reading window.location)
         (function() {
             const redirect = sessionStorage.getItem('spa-redirect');
             if (redirect) {
@@ -1779,6 +1763,22 @@
                 if (rsvpTitle) rsvpTitle.textContent = 'Streaming';
 				const rsvpFormDiv = document.getElementById('rsvp-form-div');
                 if (rsvpFormDiv) rsvpFormDiv.remove();
+            }
+        })();
+
+        // Invitee name from ?to= URL parameter (runs after SPA redirect restoration)
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const toName = (params.get('to') || '').trim();
+            const guestNameEl = document.querySelector('.guest-name');
+            if (!guestNameEl) return;
+            if (toName) {
+                const inviteeEl = document.createElement('div');
+                inviteeEl.className = 'invitee-name';
+                inviteeEl.textContent = toName;
+                guestNameEl.insertAdjacentElement('afterend', inviteeEl);
+            } else {
+                guestNameEl.remove();
             }
         })();
 
@@ -1808,12 +1808,12 @@
         });
 
         const FALLBACK_SONGS = [
-            'wedding music/atlasaudio-elegant-522420.mp3',
-            'wedding music/atlasaudio-love-piano-520077.mp3',
-            'wedding music/jonasblakewood-wedding-519603.mp3',
-            'wedding music/prettyjohn1-romantic-saxophone-486821.mp3',
-            'wedding music/the_mountain-romantic-481761.mp3',
-            'wedding music/the_mountain-wedding-522480.mp3'
+            '/wedding%20music/atlasaudio-elegant-522420.mp3',
+            '/wedding%20music/atlasaudio-love-piano-520077.mp3',
+            '/wedding%20music/jonasblakewood-wedding-519603.mp3',
+            '/wedding%20music/prettyjohn1-romantic-saxophone-486821.mp3',
+            '/wedding%20music/the_mountain-romantic-481761.mp3',
+            '/wedding%20music/the_mountain-wedding-522480.mp3'
         ];
 
         function shuffle(arr) {
