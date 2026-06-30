@@ -2643,7 +2643,7 @@
                 const isAttending = w.kehadiran === 'Hadir';
                 const tagClass = isAttending ? 'attending' : 'not-attending';
                 const tagText  = isAttending ? '✓ Attending' : '✗ Not Attending';
-                const timeStr  = w.time ? timeAgo(w.time) : '';
+                const timeStr  = w.waktu ? timeAgo(w.waktu) : '';
                 return `<div class="wish-card" style="animation-delay:${i * 0.05}s">
                     <div class="wish-card-name">🌸 ${escapeHtml(w.nama)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
                     ${timeStr ? `<div class="wish-card-time">${timeStr}</div>` : ''}
