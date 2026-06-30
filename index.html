@@ -2597,7 +2597,11 @@
             observer.observe(section);
         });
 
-        /* Wish & Prayer */
+        /* Wish & Prayer — Google Spreadsheet backend via Apps Script */
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxwAy4UM6GbyZMvwCdJ-LTxWj98kHbnu9z405TcyUDc_56UNYy5sfoc6dgjl7dPrdiu/exec";
+        const WISH_DEMO = !GAS_URL || GAS_URL === "GANTI_DENGAN_URL";
+        let demoWishes = [];
+
         function updateWishCharCount(el) {
             const countEl = document.getElementById('wishCharCount');
             if (countEl) countEl.textContent = `${el.value.length} / ${el.getAttribute('maxlength')}`;
@@ -2610,15 +2614,6 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
-        }
-
-        function loadWishes() {
-            try { return JSON.parse(localStorage.getItem('wedding-wishes') || '[]'); }
-            catch (e) { return []; }
-        }
-
-        function saveWishes(wishes) {
-            try { localStorage.setItem('wedding-wishes', JSON.stringify(wishes)); } catch (e) {}
         }
 
         function timeAgo(timestamp) {
@@ -2634,31 +2629,43 @@
             return `${months} month${months > 1 ? 's' : ''} ago`;
         }
 
-        function renderWishes() {
+        function renderWishes(items) {
             const list = document.getElementById('wishesList');
             const header = document.getElementById('wishesHeader');
             if (!list) return;
-            const wishes = loadWishes();
-            if (wishes.length === 0) {
+            if (!items || items.length === 0) {
                 list.innerHTML = '<div class="wishes-empty">No wishes yet. Be the first to send your blessings! 💕</div>';
                 if (header) header.style.display = 'none';
                 return;
             }
             if (header) header.style.display = 'block';
-            list.innerHTML = wishes.map((w, i) => {
-                const isAttending = w.attending !== 'not-attending';
+            list.innerHTML = items.map((w, i) => {
+                const isAttending = w.kehadiran === 'Hadir';
                 const tagClass = isAttending ? 'attending' : 'not-attending';
                 const tagText  = isAttending ? '✓ Attending' : '✗ Not Attending';
                 const timeStr  = w.time ? timeAgo(w.time) : '';
                 return `<div class="wish-card" style="animation-delay:${i * 0.05}s">
-                    <div class="wish-card-name">🌸 ${escapeHtml(w.name)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
+                    <div class="wish-card-name">🌸 ${escapeHtml(w.nama)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
                     ${timeStr ? `<div class="wish-card-time">${timeStr}</div>` : ''}
-                    <div class="wish-card-message">"${escapeHtml(w.message)}"</div>
+                    <div class="wish-card-message">"${escapeHtml(w.pesan)}"</div>
                 </div>`;
             }).join('');
         }
 
-        function submitWish() {
+        async function loadWishes() {
+            if (WISH_DEMO) { renderWishes(demoWishes); return; }
+            try {
+                const res = await fetch(GAS_URL);
+                const data = await res.json();
+                const items = Array.isArray(data) ? data : (data.records || []);
+                renderWishes(items.slice().reverse());
+            } catch (e) {
+                const list = document.getElementById('wishesList');
+                if (list) list.innerHTML = '<div class="wishes-empty">Failed to load wishes. Please refresh the page.</div>';
+            }
+        }
+
+        async function submitWish() {
             const nameEl       = document.getElementById('wishName');
             const msgEl        = document.getElementById('wishMessage');
             const attendanceEl = document.querySelector('input[name="wishAttendance"]:checked');
@@ -2668,29 +2675,52 @@
             if (!name)    { showToast('⚠️ Please enter your name!');             nameEl && nameEl.focus(); return; }
             if (!message) { showToast('⚠️ Please write your wishes & prayers!'); msgEl  && msgEl.focus();  return; }
 
-            const wishes = loadWishes();
-            wishes.unshift({ name, message, attending, time: Date.now() });
-            saveWishes(wishes);
+            const btn = document.querySelector('.wish-submit-btn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Sending…'; }
 
-            msgEl.value = '';
+            const entry = {
+                nama: name,
+                kehadiran: attending === 'attending' ? 'Hadir' : 'Tidak Hadir',
+                pesan: message,
+                time: Date.now()
+            };
+
+            if (WISH_DEMO) {
+                demoWishes.unshift(entry);
+                renderWishes(demoWishes);
+                afterWishSent(nameEl, msgEl, btn);
+                return;
+            }
+
+            try {
+                // Use text/plain to avoid CORS preflight issues with Apps Script
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(entry)
+                });
+                await loadWishes();
+                afterWishSent(nameEl, msgEl, btn);
+            } catch (err) {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<span>🙏</span> Send Wishes & Prayers'; }
+                showToast('❌ Failed to send. Please check your connection and try again.');
+            }
+        }
+
+        function afterWishSent(nameEl, msgEl, btn) {
+            if (msgEl) msgEl.value = '';
             const countEl = document.getElementById('wishCharCount');
             if (countEl) countEl.textContent = '0 / 300';
             const defaultRadio = document.querySelector('input[name="wishAttendance"][value="attending"]');
             if (defaultRadio) defaultRadio.checked = true;
-
-            // Only clear name if it wasn't pre-filled from URL
             const toParam = new URLSearchParams(window.location.search).get('to');
-            if (!toParam || !toParam.trim()) {
-                nameEl.value = '';
-            }
-
-            renderWishes();
+            if (nameEl && (!toParam || !toParam.trim())) nameEl.value = '';
+            if (btn) { btn.disabled = false; btn.innerHTML = '<span>🙏</span> Send Wishes & Prayers'; }
             showToast('🙏 Your wishes & prayers have been sent!');
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            renderWishes();
-            // Pre-fill name from URL parameter 'to'; lock field if set
+            loadWishes();
             const toParam = new URLSearchParams(window.location.search).get('to');
             const nameEl  = document.getElementById('wishName');
             if (nameEl && toParam && toParam.trim()) {
