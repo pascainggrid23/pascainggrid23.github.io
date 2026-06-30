@@ -1372,9 +1372,7 @@
     <div class="toast" id="toast"></div>
 
     <!-- Audio Element -->
-    <audio id="bgMusic" loop>
-        <source src="https://cs1.mp3.pm/download/138525260/OHlRU3V4TFMzR1ZOSmhIUkZwWVd2ZnlYdmljRE5nYVdvWDVhQXhJUVRtR1JvS2EwcW4rWmZZMWFjbnF0cko4YXU0SjY0UWNjYmpKTGU1a3JJcUZXK2RzSlZ0Q2tFNTJlaFZUbkgrbFBpNmVLN2hKc1JodGJaNmdYcm56Y2l0V1Q/T._Carter_Music_-_All_of_the_Above-VoxPiano_(mp3.pm).mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bgMusic"></audio>
 
     <div class="container" id="mainContainer">
         <!-- Halaman Pembuka
@@ -1725,6 +1723,34 @@
         let isPlaying = false;
         let invitationOpened = false;
 
+        const weddingSongs = [
+            'wedding%20music/atlasaudio-elegant-522420.mp3',
+            'wedding%20music/atlasaudio-love-piano-520077.mp3',
+            'wedding%20music/jonasblakewood-wedding-519603.mp3',
+            'wedding%20music/prettyjohn1-romantic-saxophone-486821.mp3',
+            'wedding%20music/the_mountain-romantic-481761.mp3',
+            'wedding%20music/the_mountain-wedding-522480.mp3'
+        ];
+        let shuffledSongs = [];
+        let currentSongIndex = 0;
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function playNextSong() {
+            currentSongIndex = (currentSongIndex + 1) % shuffledSongs.length;
+            music.src = shuffledSongs[currentSongIndex];
+            music.play().catch(err => console.log('Playback failed:', err));
+        }
+
+        music.addEventListener('ended', playNextSong);
+
         // Fungsi Buka Undangan - Satu-satunya cara untuk lanjut
         function openInvitation() {
             if (invitationOpened) return;
@@ -1745,8 +1771,11 @@
                 musicControl.style.display = 'flex';
             }, 300);
 
-            // Auto play musik
-            music.play();
+            // Auto play musik - shuffle playlist and start
+            shuffledSongs = shuffleArray(weddingSongs);
+            currentSongIndex = 0;
+            music.src = shuffledSongs[0];
+            music.play().catch(err => console.log('Playback failed:', err));
 			isPlaying = true;
 			musicControl.classList.add('playing');
 
@@ -1777,6 +1806,11 @@
                 musicControl.classList.remove('playing');
                 musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2"/>';
             } else {
+                if (!music.src || music.src === window.location.href) {
+                    shuffledSongs = shuffleArray(weddingSongs);
+                    currentSongIndex = 0;
+                    music.src = shuffledSongs[0];
+                }
                 music.play().catch(err => console.log('Auto-play prevented'));
                 isPlaying = true;
                 musicControl.classList.add('playing');
@@ -1913,6 +1947,7 @@
         const lightboxContent = document.getElementById('lightboxContent');
         const counter = document.getElementById('counter');
         let isZoomed = false;
+        let currentScale = 1;
 
 		// Build gallery thumbnails
         photos.forEach((photo, index) => {
@@ -1925,6 +1960,7 @@
 
         function resetZoom() {
             isZoomed = false;
+            currentScale = 1;
             lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = '';
         }
@@ -1991,9 +2027,11 @@
             e.stopPropagation();
             isZoomed = !isZoomed;
             if (isZoomed) {
+                currentScale = 2.2;
                 lightboxImg.style.transform = 'scale(2.2)';
                 lightboxImg.classList.add('zoomed');
             } else {
+                currentScale = 1;
                 lightboxImg.style.transform = '';
                 lightboxImg.classList.remove('zoomed');
             }
@@ -2012,12 +2050,56 @@
             if (e.target === lightbox) closeLightbox();
         });
 
-        // Swipe support for mobile lightbox
+        // Swipe and pinch-zoom support for mobile lightbox
         let touchStartX = 0;
+        let pinchStartDist = 0;
+        let pinchStartScale = 1;
+        let isPinching = false;
+
         lightbox.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
+            if (e.touches.length === 2) {
+                isPinching = true;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                pinchStartDist = Math.sqrt(dx * dx + dy * dy);
+                pinchStartScale = currentScale;
+            } else if (e.touches.length === 1) {
+                touchStartX = e.changedTouches[0].screenX;
+            }
         }, { passive: true });
+
+        lightbox.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && isPinching) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const scale = Math.min(Math.max(pinchStartScale * (dist / pinchStartDist), 1), 4);
+                currentScale = scale;
+                lightboxImg.style.transform = `scale(${scale})`;
+                if (scale > 1) {
+                    isZoomed = true;
+                    lightboxImg.classList.add('zoomed');
+                } else {
+                    isZoomed = false;
+                    lightboxImg.classList.remove('zoomed');
+                }
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         lightbox.addEventListener('touchend', (e) => {
+            if (isPinching) {
+                if (e.touches.length < 2) {
+                    isPinching = false;
+                    if (currentScale <= 1.05) {
+                        currentScale = 1;
+                        isZoomed = false;
+                        lightboxImg.style.transform = '';
+                        lightboxImg.classList.remove('zoomed');
+                    }
+                }
+                return;
+            }
             if (isZoomed) return;
             const diff = touchStartX - e.changedTouches[0].screenX;
             if (Math.abs(diff) > 50) changeImage(diff > 0 ? 1 : -1);
