@@ -1367,6 +1367,163 @@
         .scroll-indicator.btn-clicked {
             animation: explorePulse 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
         }
+
+        /* Wish & Prayer */
+        .wish-form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 40px rgba(198, 160, 217, 0.2);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .wish-form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #9370db;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .wish-field {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e6d9f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Baskervville', serif;
+            color: #444;
+            background: #faf8fc;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .wish-field:focus {
+            border-color: #9370db;
+            box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.15);
+        }
+
+        .wish-field::placeholder {
+            color: #bbb;
+        }
+
+        textarea.wish-field {
+            min-height: 100px;
+            resize: none;
+        }
+
+        .wish-submit-btn {
+            width: 100%;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Baskervville', serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+            margin-top: 5px;
+        }
+
+        .wish-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .wish-submit-btn:active {
+            transform: scale(0.97);
+        }
+
+        .wishes-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #9370db;
+            font-weight: bold;
+            margin: 10px 0 20px;
+            text-align: center;
+        }
+
+        .wishes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .wishes-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .wishes-list::-webkit-scrollbar-track {
+            background: #f5f0f7;
+            border-radius: 10px;
+        }
+
+        .wishes-list::-webkit-scrollbar-thumb {
+            background: #c6a0d9;
+            border-radius: 10px;
+        }
+
+        .wish-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(198, 160, 217, 0.15);
+            border-left: 4px solid #9370db;
+            text-align: left;
+            animation: wishSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes wishSlideIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0)  scale(1);    }
+        }
+
+        .wish-card-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #9370db;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wish-card-message {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .wishes-empty {
+            text-align: center;
+            color: #bbb;
+            font-size: 15px;
+            padding: 30px 20px;
+            font-style: italic;
+        }
+
+        .wish-char-count {
+            font-size: 12px;
+            color: #bbb;
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -1675,6 +1832,42 @@
 							<span>📋</span> Copy account number
 						</button>
 					</div>
+				</div>
+			</section>
+		</div>
+
+        <!-- Wish & Prayer -->
+		<div class="all-background">
+			<section class="hero">
+				<h2 class="section-title">Wishes & Prayers</h2>
+				<div class="closing-message">
+					Psalm 128:1 (NIV)<br>
+					"Blessed are all who fear the Lord, who walk in obedience to Him."
+				</div>
+				<div class="story-content" style="margin-top: 30px; text-align: left;">
+					<div class="wish-form-container">
+						<div class="wish-form-title">💌 Leave Your Wishes & Prayers</div>
+						<input
+							type="text"
+							class="wish-field"
+							id="wishName"
+							placeholder="Your Name"
+							maxlength="60"
+						>
+						<textarea
+							class="wish-field"
+							id="wishMessage"
+							placeholder="Write your wishes & prayers for the couple..."
+							maxlength="300"
+							oninput="updateWishCharCount(this)"
+						></textarea>
+						<div class="wish-char-count" id="wishCharCount">0 / 300</div>
+						<button class="wish-submit-btn" onclick="submitWish()">
+							<span>🙏</span> Send Wishes & Prayers
+						</button>
+					</div>
+					<div class="wishes-header" id="wishesHeader" style="display:none;">✨ Wishes & Prayers from Beloved Guests</div>
+					<div class="wishes-list" id="wishesList"></div>
 				</div>
 			</section>
 		</div>
@@ -2310,6 +2503,72 @@
         document.querySelectorAll('.hero, .closing').forEach(section => {
             observer.observe(section);
         });
+
+        /* Wish & Prayer */
+        function updateWishCharCount(el) {
+            const countEl = document.getElementById('wishCharCount');
+            if (countEl) countEl.textContent = `${el.value.length} / ${el.getAttribute('maxlength')}`;
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function loadWishes() {
+            try { return JSON.parse(localStorage.getItem('wedding-wishes') || '[]'); }
+            catch (e) { return []; }
+        }
+
+        function saveWishes(wishes) {
+            try { localStorage.setItem('wedding-wishes', JSON.stringify(wishes)); } catch (e) {}
+        }
+
+        function renderWishes() {
+            const list = document.getElementById('wishesList');
+            const header = document.getElementById('wishesHeader');
+            if (!list) return;
+            const wishes = loadWishes();
+            if (wishes.length === 0) {
+                list.innerHTML = '<div class="wishes-empty">No wishes yet. Be the first to send your blessings! 💕</div>';
+                if (header) header.style.display = 'none';
+                return;
+            }
+            if (header) header.style.display = 'block';
+            list.innerHTML = wishes.map((w, i) =>
+                `<div class="wish-card" style="animation-delay:${i * 0.05}s">
+                    <div class="wish-card-name">🌸 ${escapeHtml(w.name)}</div>
+                    <div class="wish-card-message">"${escapeHtml(w.message)}"</div>
+                </div>`
+            ).join('');
+        }
+
+        function submitWish() {
+            const nameEl = document.getElementById('wishName');
+            const msgEl  = document.getElementById('wishMessage');
+            const name    = (nameEl ? nameEl.value : '').trim();
+            const message = (msgEl  ? msgEl.value  : '').trim();
+            if (!name)    { showToast('⚠️ Please enter your name!');              nameEl && nameEl.focus(); return; }
+            if (!message) { showToast('⚠️ Please write your wishes & prayers!');  msgEl  && msgEl.focus();  return; }
+
+            const wishes = loadWishes();
+            wishes.unshift({ name, message, time: Date.now() });
+            saveWishes(wishes);
+
+            nameEl.value = '';
+            msgEl.value  = '';
+            const countEl = document.getElementById('wishCharCount');
+            if (countEl) countEl.textContent = '0 / 300';
+
+            renderWishes();
+            showToast('🙏 Your wishes & prayers have been sent!');
+        }
+
+        document.addEventListener('DOMContentLoaded', renderWishes);
     </script>
 </body>
 </html>
