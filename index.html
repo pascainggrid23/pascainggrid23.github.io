@@ -1762,6 +1762,11 @@
 
         // Show Family Dinner card, RSVP title and buttons only on /full path
         (function() {
+            const redirect = sessionStorage.getItem('spa-redirect');
+            if (redirect) {
+                sessionStorage.removeItem('spa-redirect');
+                history.replaceState(null, null, redirect);
+            }
             const path = window.location.pathname.replace(/\/+$/, '');
             const isFullPath = path === '/full' || path.startsWith('/full/');
             if (!isFullPath) {
