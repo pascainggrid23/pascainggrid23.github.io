@@ -235,7 +235,7 @@
             overflow: hidden;
             padding: 20px;
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(20px);
             transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform, opacity;
         }
@@ -861,7 +861,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transform: translateY(40px);
+            transform: translateY(20px);
             transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform, opacity;
         }
@@ -1589,23 +1589,28 @@
         // Fungsi Buka Undangan - Satu-satunya cara untuk lanjut
         function openInvitation() {
             if (invitationOpened) return;
-            
+
             invitationOpened = true;
-            
+
+            // Remove scroll-blocking listeners — no longer needed after invitation opens
+            window.removeEventListener('wheel', preventScroll);
+            window.removeEventListener('touchmove', preventScroll);
+            window.removeEventListener('scroll', preventScroll);
+
             // Sembunyikan cover overlay
             coverOverlay.classList.add('hidden');
-            
+
             // Tampilkan konten utama
             setTimeout(() => {
                 mainContainer.classList.add('visible');
                 musicControl.style.display = 'flex';
             }, 300);
-            
+
             // Auto play musik
             music.play();
 			isPlaying = true;
 			musicControl.classList.add('playing');
-            
+
             // Scroll ke atas halaman utama
             setTimeout(() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1624,7 +1629,6 @@
         // Block semua cara scroll sebelum buka undangan
         window.addEventListener('wheel', preventScroll, { passive: false });
         window.addEventListener('touchmove', preventScroll, { passive: false });
-        window.addEventListener('scroll', preventScroll, { passive: false });
 
         // Musik Control
         function playMusic() {
