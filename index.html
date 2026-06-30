@@ -1599,7 +1599,7 @@
         <!-- RSVP -->
 		<div class="all-background">
 			<section class="hero">
-				<h2 class="section-title">RSVP & Streaming</h2>
+				<h2 class="section-title" id="rsvp-section-title">RSVP & Streaming</h2>
 				<div class="story-content">
 					<p>
 						Please kindly help us prepare everything better by confirming your attendance to our Family Dinner with the following RSVP form.<br>
@@ -1760,13 +1760,16 @@
             }
         })();
 
-        // Show Family Dinner card only on /full path
+        // Show Family Dinner card, RSVP title and buttons only on /full path
         (function() {
             const path = window.location.pathname.replace(/\/+$/, '');
             const isFullPath = path === '/full' || path.startsWith('/full/');
             if (!isFullPath) {
                 const card = document.getElementById('familyDinnerCard');
                 if (card) card.remove();
+                const rsvpTitle = document.getElementById('rsvp-section-title');
+                if (rsvpTitle) rsvpTitle.textContent = 'Streaming';
+                document.querySelectorAll('.rsvp-btn').forEach(function(btn) { btn.remove(); });
             }
         })();
 
