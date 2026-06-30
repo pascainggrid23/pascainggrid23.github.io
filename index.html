@@ -1573,7 +1573,7 @@
 						</div>
 					</div>
 					
-					<div class="event-card">
+					<div class="event-card" id="familyDinnerCard">
 						<div class="event-type">Family Dinner</div>
 						<div class="event-info">
 							<span>🗓️</span>
@@ -1757,6 +1757,16 @@
                 guestNameEl.insertAdjacentElement('afterend', inviteeEl);
             } else {
                 guestNameEl.remove();
+            }
+        })();
+
+        // Show Family Dinner card only on /full path
+        (function() {
+            const path = window.location.pathname.replace(/\/+$/, '');
+            const isFullPath = path === '/full' || path.startsWith('/full/');
+            if (!isFullPath) {
+                const card = document.getElementById('familyDinnerCard');
+                if (card) card.remove();
             }
         })();
 
