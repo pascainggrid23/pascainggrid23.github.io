@@ -564,44 +564,6 @@
             box-shadow: 0 8px 25px rgba(234, 67, 53, 0.6);
         }
 
-        /* RSVP */
-        .rsvp {
-            background: linear-gradient(135deg, #faf8fc, #fff5f8);
-			opacity: 0.8;
-        }
-
-        .rsvp p {
-            font-size: 17px;
-            max-width: 100%;
-            margin: 0 auto;
-            line-height: 1.8;
-			
-        }
-
-        .rsvp-btn {
-            margin-top: 10px;
-            padding: 16px 50px;
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-            display: inline-flex;
-            align-items: center;
-        }
-		
-		.rsvp-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
-        }
-
-        .rsvp-btn:active {
-            transform: scale(0.95);
-        }
-
         /* Gallery */
         .gallery {
             background: white;
@@ -1596,29 +1558,6 @@
 			</section>
 		</div>
 
-        <!-- RSVP -->
-		<div class="all-background">
-			<section class="hero">
-				<h2 class="section-title">RSVP & Streaming</h2>
-				<div class="story-content">
-					<p>
-						Please kindly help us prepare everything better by confirming your attendance to our Family Dinner with the following RSVP form.<br>
-                        Please fill out the RSVP form no later than <b>September 26, 2026</b>
-					</p>
-					<button class="rsvp-btn" onclick="confirmGoogleForm()">
-						<span style="font-size: 26px;">💬</span> Confirmation via Google Form
-					</button>
-					<br><br>
-					<p>
-						Share our joy from wherever you are! Click the button below to watch our wedding ceremony live.
-					</p>
-					<button class="rsvp-btn" onclick="streaming()">
-						<span style="font-size: 26px;">📺</span> Live!
-					</button>
-				</div>
-			</section>
-		</div>
-
         <!-- Gallery -->
 		<div class="all-background">
 			<section class="hero">
@@ -1962,18 +1901,6 @@
 			
             window.open(calendarUrl, '_blank', 'noopener,noreferrer');
             showToast('✅ Link kalender dibuka!');
-        }
-
-        // Confirm via WhatsApp
-        function confirmGoogleForm() {
-            //const message = `Halo Pascario & Inggriani! 🎉\n\nSaya ingin konfirmasi kehadiran untuk acara pernikahan kalian.\n\nNama: [Isi nama Anda]\nJumlah tamu: [Isi jumlah]\nKehadiran: [Hadir/Tidak Hadir]\n\nTerima kasih! 💕`;
-            const whatsappUrl = `https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=header`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-        }
-		
-        function streaming() {
-			const streamingUrl = `https://www.instagram.com/inggridpris/`;
-            window.open(streamingUrl, '_blank', 'noopener,noreferrer');
         }
 
         // Copy to Clipboard
