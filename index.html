@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Wedding of Pascario & Inggriani </title>
     <style>
-		@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap&family=Baskervville');
+		@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Baskervville&display=swap');
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +18,6 @@
             color: #4a4a4a;*/
             overflow-x: hidden;
 			font-family: 'Baskervville', serif;
-			//min-height: 100vh;
         }
 
         /* Overlay Cover - Tidak bisa skip */
@@ -1099,7 +1098,7 @@
                 grid-template-columns: repeat(4, 1fr);
             }
             
-            .countdown-value {
+            .countdown-number {
                 font-size: 60px;
             }
             
@@ -1234,24 +1233,24 @@
             font-weight: bold;
             margin-bottom: 20px;
             text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-            animation: fadeInUp 1s ease-out;
+            animation: fadeInUpSlider 1s ease-out;
         }
 
         .slide-subtitle {
             font-size: 1.5em;
             margin-bottom: 30px;
             text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
-            animation: fadeInUp 1s ease-out 0.3s both;
+            animation: fadeInUpSlider 1s ease-out 0.3s both;
         }
 
         .slide-date {
             font-size: 1.2em;
             letter-spacing: 3px;
             text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
-            animation: fadeInUp 1s ease-out 0.6s both;
+            animation: fadeInUpSlider 1s ease-out 0.6s both;
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeInUpSlider {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -1403,7 +1402,7 @@
 			</div>
 
 			<div class="slide">
-				<img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&h=1000" alt="Wedding Photo 2" class="slide-image">
+				<img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&h=1000" alt="Wedding Photo 2" class="slide-image" loading="lazy">
 				<div class="slide-overlay">
 					<div class="slide-subtitle">The Wedding of</div>
 					<div class="slide-title">Pascario & Inggriani</div>
@@ -1412,7 +1411,7 @@
 			</div>
 
 			<div class="slide">
-				<img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&h=1000" alt="Wedding Photo 3" class="slide-image">
+				<img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&h=1000" alt="Wedding Photo 3" class="slide-image" loading="lazy">
 				<div class="slide-overlay">
 					<div class="slide-subtitle">The Wedding of</div>
 					<div class="slide-title">Pascario & Inggriani</div>
@@ -1438,7 +1437,7 @@
         <!-- Countdown Section -->
 		<div class="all-background">
 			<section class="hero">
-				<h2 class="section-title">Countdown to Our Special Day</h2></br>
+				<h2 class="section-title">Countdown to Our Special Day</h2><br>
 				<div class="story-content">
 					<p>The clock was ticking so fast, between thrilling moments we had never felt before.</p>
 					<div class="countdown-container">
@@ -1461,6 +1460,7 @@
 							</div>
 						</div>
 					</div>
+					<div class="congratulations-message" id="congratsMessage"></div>
 					<p>We look forward to welcoming family and friends to witness our blessing vows on a happy day.</p>
 				</div>
 			</section>
@@ -1485,7 +1485,7 @@
 			<section class="hero">
 				<h2 class="section-title">The Groom & Bride</h2>
 				<div class="closing-message">
-								Ecclesiates 4:9-10 (NIV) </br>
+								Ecclesiastes 4:9-10 (NIV)<br>
 									"Two are better than one, because they have a good return for their labor;<br>
 									if either of them falls down, one can help the other up. But pity anyone who falls and has no one to help them up."
 				</div>					
@@ -1495,7 +1495,7 @@
 						<div class="profile-name">Pascario Tri Yudanto</div>
 						<div class="profile-parent">
 							The Son Of:<br>
-							Mr. Sri Hutomo</br>
+							Mr. Sri Hutomo<br>
 							&<br>
 							Mrs. Yuni Triwati
 						</div>
@@ -1506,7 +1506,7 @@
 						<div class="profile-name">Inggriani Priscilia</div>
 						<div class="profile-parent">
 							The Daughter Of:<br>
-							Mr. Rudy Sendjaja</br>
+							Mr. Rudy Sendjaja<br>
 							&<br>
 							Mrs. Sarah Thomas
 						</div>
@@ -1520,7 +1520,7 @@
 			<section class="hero">
 				<h2 class="section-title">Wedding Venue</h2>
 					<div class="closing-message">
-										Matthew 19:6 (NIV) </br>
+										Matthew 19:6 (NIV) <br>
 										"So they are no longer two, but one flesh.<br>
 										Therefore what God has joined together, let no one separate."<br>
 					</div>					
@@ -1529,14 +1529,14 @@
 						<div class="event-type">Holy Matrimony</div>
 						<div class="event-info">
 							<span>🗓️</span>
-							<div>03 Oktober 2026</br>Pukul 13.00 WIB</div>
+							<div>03 Oktober 2026<br>Pukul 13.00 WIB</div>
 						</div>
 						<div class="event-info">
 							<span>📍</span>
-							<div>GKI Gunung Sahari</br>Jakarta Pusat</div>
+							<div>GKI Gunung Sahari<br>Jakarta Pusat</div>
 						</div>
 						<div class="action-buttons">
-							<a href="https://maps.app.goo.gl/rNNG5k1Gm4v121Wk9" target="_blank" class="btn btn-map">
+							<a href="https://maps.app.goo.gl/rNNG5k1Gm4v121Wk9" target="_blank" rel="noopener noreferrer" class="btn btn-map">
 								<span>🗺️</span> Location
 							</a>
 							<button onclick="addToCalendar('akad')" class="btn btn-calendar">
@@ -1549,14 +1549,14 @@
 						<div class="event-type">Family Dinner</div>
 						<div class="event-info">
 							<span>🗓️</span>
-							<div>03 Oktober 2026</br>Pukul 18.00 - 21.00 WIB</div>
+							<div>03 Oktober 2026<br>Pukul 18.00 - 21.00 WIB</div>
 						</div>
 						<div class="event-info">
 							<span>📍</span>
-							<div>Aroem Mahakam Resto, Cafe, and Ballroom</br>Jakarta Selatan</div>
+							<div>Aroem Mahakam Resto, Cafe, and Ballroom<br>Jakarta Selatan</div>
 						</div>
 						<div class="action-buttons">
-							<a href="https://maps.app.goo.gl/DXL9usGzVnCxxnB5A" target="_blank" class="btn btn-map">
+							<a href="https://maps.app.goo.gl/DXL9usGzVnCxxnB5A" target="_blank" rel="noopener noreferrer" class="btn btn-map">
 								<span>🗺️</span> Location
 							</a>
 							<button onclick="addToCalendar('resepsi')" class="btn btn-calendar">
@@ -1574,13 +1574,13 @@
 				<h2 class="section-title">RSVP & Streaming</h2>
 				<div class="story-content">
 					<p>
-						Please kindly help us prepare everything better by confirming your attandance to our Family Dinner with the following RSVP form.<br>
+						Please kindly help us prepare everything better by confirming your attendance to our Family Dinner with the following RSVP form.<br>
                         Please fill out the RSVP form no later than <b>September 26, 2026</b>
 					</p>
 					<button class="rsvp-btn" onclick="confirmGoogleForm()">
 						<span style="font-size: 26px;">💬</span> Confirmation via Google Form
 					</button>
-					</br></br>
+					<br><br>
 					<p>
 						Share our joy from wherever you are! Click the button below to watch our wedding ceremony live.
 					</p>
@@ -1596,7 +1596,7 @@
 			<section class="hero">
 				<h2 class="section-title">Our Moments</h2>
 					<div class="closing-message">
-										1 John 4:19 (NIV) </br>
+										1 John 4:19 (NIV) <br>
 										"We love because God first loved us"<br>
 					</div>
 				<div class="photo-grid" id="gallery">
@@ -1707,7 +1707,7 @@
                 },
                 resepsi: {
                     title: 'Family Dinner of Pascario & Inggriani',
-                    location: 'Aroem Mahakam Resto, Cafe & Ballroon',
+                    location: 'Aroem Mahakam Resto, Cafe & Ballroom',
                     startDate: '2026-10-03T18:00:00',
                     endDate: '2026-10-03T21:00:00',
                     description: 'Intimate Wedding Pascario & Inggriani'
@@ -1718,6 +1718,7 @@
 
         const music = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
+        const musicIcon = document.getElementById('musicIcon');
         const coverOverlay = document.getElementById('coverOverlay');
         const mainContainer = document.getElementById('mainContainer');
         let isPlaying = false;
@@ -1760,10 +1761,14 @@
 
         function playTrack(index) {
             music.src = playlist[index];
-            music.play().catch(() => {});
-            isPlaying = true;
-            musicControl.classList.add('playing');
-            musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+            music.play().then(() => {
+                isPlaying = true;
+                musicControl.classList.add('playing');
+                musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+            }).catch(() => {
+                isPlaying = false;
+                musicControl.classList.remove('playing');
+            });
         }
 
         function playNextSong() {
@@ -1823,10 +1828,11 @@
                 musicControl.classList.remove('playing');
                 musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2"/>';
             } else {
-                music.play().catch(err => console.log('Auto-play prevented'));
-                isPlaying = true;
-                musicControl.classList.add('playing');
-                musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+                music.play().then(() => {
+                    isPlaying = true;
+                    musicControl.classList.add('playing');
+                    musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+                }).catch(() => {});
             }
         }
 
@@ -1838,15 +1844,20 @@
             }
         }
 
-        // Countdown Timer
+        // Countdown Timer — cache DOM refs and weddingDate so they aren't re-queried/re-parsed every second
+        const WEDDING_DATE_MS = new Date(CONFIG.weddingDate).getTime();
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const countdownDisplayEl = document.getElementById('countdownDisplay');
+        const congratsEl = document.getElementById('congratsMessage');
+
         function updateCountdown() {
-            const weddingDate = new Date(CONFIG.weddingDate).getTime();
-            const now = new Date().getTime();
-            const distance = weddingDate - now;
+            const distance = WEDDING_DATE_MS - Date.now();
 
             if (distance < 0) {
-                document.getElementById('countdownDisplay').style.display = 'none';
-                const congratsEl = document.getElementById('congratsMessage');
+                countdownDisplayEl.style.display = 'none';
                 congratsEl.innerHTML = CONFIG.congratsMessage;
                 congratsEl.style.display = 'block';
                 return;
@@ -1857,10 +1868,10 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            daysEl.textContent = String(days).padStart(2, '0');
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minutesEl.textContent = String(minutes).padStart(2, '0');
+            secondsEl.textContent = String(seconds).padStart(2, '0');
         }
 
         updateCountdown();
@@ -1876,7 +1887,7 @@
             //const calendarUrl = `https://calendar.app.google/DQeAsPWxMPUjkzGr5=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
             
 			
-            window.open(calendarUrl, '_blank');
+            window.open(calendarUrl, '_blank', 'noopener,noreferrer');
             showToast('✅ Link kalender dibuka!');
         }
 
@@ -1884,28 +1895,40 @@
         function confirmGoogleForm() {
             //const message = `Halo Pascario & Inggriani! 🎉\n\nSaya ingin konfirmasi kehadiran untuk acara pernikahan kalian.\n\nNama: [Isi nama Anda]\nJumlah tamu: [Isi jumlah]\nKehadiran: [Hadir/Tidak Hadir]\n\nTerima kasih! 💕`;
             const whatsappUrl = `https://docs.google.com/forms/d/e/1FAIpQLSer0wHGIn_zyHyzZPKXBcAXR28tbv-Dsg45OUU1sIJcfqS1pA/viewform?usp=header`;
-            window.open(whatsappUrl, '_blank');
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
         }
 		
-		// Confirm via WhatsApp
         function streaming() {
-			const streaming = `https://www.instagram.com/inggridpris/`;
-            window.open(streaming, '_blank');
+			const streamingUrl = `https://www.instagram.com/inggridpris/`;
+            window.open(streamingUrl, '_blank', 'noopener,noreferrer');
         }
 
-        // Copy to Clipboard	
-		function copyToClipboard(elementId, button) {
-            var element = document.getElementById(elementId);
-			element.select();
-			element.setSelectionRange(0, 99999); // untuk mobile
-			document.execCommand("copy");
-			button.classList.add('copied');
-            button.innerHTML = '<span>✓</span> Copied Successfully!';
-            showToast('✅ Number copied successfully!');
-			setTimeout(() => {
+        // Copy to Clipboard
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            const text = element.value;
+            const showCopied = () => {
+                button.classList.add('copied');
+                button.innerHTML = '<span>✓</span> Copied Successfully!';
+                showToast('✅ Number copied successfully!');
+                setTimeout(() => {
                     button.classList.remove('copied');
                     button.innerHTML = '<span>📋</span> Copy account number';
-            }, 2000);
+                }, 2000);
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showCopied).catch(() => {
+                    element.select();
+                    element.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                    showCopied();
+                });
+            } else {
+                element.select();
+                element.setSelectionRange(0, 99999);
+                document.execCommand('copy');
+                showCopied();
+            }
         }
 
         // Show Toast Notification
