@@ -218,6 +218,8 @@
 			background-position: center;
 			background-repeat: no-repeat;
 			background-image: url('https://raw.githubusercontent.com/pascainggrid23/pascainggrid23.github.io/refs/heads/main/Images/background2.jpg');
+			content-visibility: auto;
+			contain-intrinsic-size: auto 600px;
 		}
 		
         .hero {
@@ -716,9 +718,10 @@
             border-radius: 12px;
             box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
             display: block;
-            transition: opacity 0.2s ease, transform 0.35s ease;
+            transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             cursor: zoom-in;
             transform-origin: center center;
+            will-change: transform;
         }
 
         .lightbox-content img.zoomed {
@@ -1307,7 +1310,7 @@
             font-weight: 500;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+            transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
             animation: pulseBtn 2.5s ease-in-out infinite;
             user-select: none;
         }
@@ -1338,6 +1341,31 @@
         @keyframes bounceArrow {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(4px); }
+        }
+
+        /* Invitee name - shown below Mr./Mrs. when ?to= param is set */
+        .invitee-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 6px 0 15px;
+            animation: fadeInUp 1.5s ease 0.5s both;
+            letter-spacing: 1px;
+        }
+
+        /* Explore button click burst animation */
+        @keyframes explorePulse {
+            0%   { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
+            35%  { transform: translateX(-50%) scale(0.88); }
+            70%  { transform: translateX(-50%) scale(1.06); box-shadow: 0 0 0 14px rgba(255,255,255,0); }
+            100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+        }
+
+        .scroll-indicator.btn-clicked {
+            animation: explorePulse 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
         }
     </style>
 </head>
@@ -1716,6 +1744,22 @@
         };
         // ======= AKHIR KONFIGURASI =======
 
+        // Invitee name from ?to= URL parameter
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const toName = (params.get('to') || '').trim();
+            const guestNameEl = document.querySelector('.guest-name');
+            if (!guestNameEl) return;
+            if (toName) {
+                const inviteeEl = document.createElement('div');
+                inviteeEl.className = 'invitee-name';
+                inviteeEl.textContent = toName;
+                guestNameEl.insertAdjacentElement('afterend', inviteeEl);
+            } else {
+                guestNameEl.remove();
+            }
+        })();
+
         const music = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
         const musicIcon = document.getElementById('musicIcon');
@@ -1725,6 +1769,21 @@
         let invitationOpened = false;
         let playlist = [];
         let currentTrack = 0;
+
+        // Pause music when tab/window becomes inactive, resume when active again
+        let wasPlayingBeforeHidden = false;
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                wasPlayingBeforeHidden = isPlaying;
+                if (isPlaying) {
+                    music.pause();
+                }
+            } else {
+                if (wasPlayingBeforeHidden && invitationOpened) {
+                    music.play().catch(() => {});
+                }
+            }
+        });
 
         const FALLBACK_SONGS = [
             'wedding music/atlasaudio-elegant-522420.mp3',
@@ -1837,10 +1896,14 @@
         }
 
         function scrollToContent() {
+            const btn = document.querySelector('.scroll-indicator');
+            btn.classList.add('btn-clicked');
+            setTimeout(() => btn.classList.remove('btn-clicked'), 600);
+
             const sliderContainer = document.querySelector('.slider-container');
             const nextSection = sliderContainer.nextElementSibling;
             if (nextSection) {
-                nextSection.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => nextSection.scrollIntoView({ behavior: 'smooth' }), 100);
             }
         }
 
@@ -1990,7 +2053,7 @@
         photos.forEach((photo, index) => {
             const item = document.createElement('div');
             item.className = 'photo-item';
-            item.innerHTML = `<img src="${photo}" alt="Photo ${index + 1}" loading="lazy">`;
+            item.innerHTML = `<img src="${photo}" alt="Photo ${index + 1}" loading="lazy" decoding="async">`;
             item.onclick = () => openLightbox(index);
             gallery.appendChild(item);
         });
@@ -2098,6 +2161,7 @@
             if (e.touches.length === 2) {
                 isPinching = true;
                 pinchStartDist = getPinchDist(e);
+                lightboxImg.style.transition = 'none'; // follow finger in real-time
             } else {
                 isPinching = false;
                 touchStartX = e.changedTouches[0].screenX;
@@ -2115,6 +2179,7 @@
             if (isPinching) {
                 const match = lightboxImg.style.transform.match(/scale\(([^)]+)\)/);
                 currentScale = match ? parseFloat(match[1]) : 1;
+                lightboxImg.style.transition = ''; // restore smooth CSS transition
                 if (currentScale <= 1) {
                     resetZoom();
                 } else {
