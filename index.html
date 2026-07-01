@@ -1458,23 +1458,72 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 4px;
         }
 
-        .wishes-list::-webkit-scrollbar {
-            width: 6px;
+        .wishes-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 24px;
         }
 
-        .wishes-list::-webkit-scrollbar-track {
-            background: #f5f0f7;
-            border-radius: 10px;
+        .wish-page-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 8px;
+            border: 2px solid #e6d9f0;
+            background: #faf8fc;
+            color: #764ba2;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Baskervville', serif;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .wishes-list::-webkit-scrollbar-thumb {
-            background: #c6a0d9;
-            border-radius: 10px;
+        .wish-page-btn:hover:not(:disabled):not(.active) {
+            border-color: #9370db;
+            background: #f0e8fc;
+            transform: translateY(-2px);
+        }
+
+        .wish-page-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
+            cursor: default;
+        }
+
+        .wish-page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .wish-page-btn.wish-page-nav {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .wish-page-ellipsis {
+            color: #bbb;
+            font-size: 14px;
+            padding: 0 4px;
+            user-select: none;
+        }
+
+        .wishes-page-info {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 10px;
         }
 
         .wish-card {
@@ -1972,6 +2021,7 @@
 					</div>
 					<div class="wishes-header" id="wishesHeader" style="display:none;">✨ Wishes & Prayers from Beloved Guests</div>
 					<div class="wishes-list" id="wishesList"></div>
+					<div class="wishes-pagination" id="wishesPagination"></div>
 				</div>
 			</section>
 		</div>
@@ -2649,17 +2699,33 @@
 		    return `${months} month${months > 1 ? 's' : ''} ago`;
 		}
 		
+		const WISHES_PER_PAGE = 10;
+		let currentWishesData = [];
+		let currentWishPage = 1;
+
 		function renderWishes(items) {
+		    currentWishesData = items || [];
+		    currentWishPage = 1;
+		    paintWishesPage();
+		}
+
+		function paintWishesPage() {
 		    const list = document.getElementById('wishesList');
 		    const header = document.getElementById('wishesHeader');
 		    if (!list) return;
+		    const items = currentWishesData;
 		    if (!items || items.length === 0) {
 		        list.innerHTML = '<div class="wishes-empty">No wishes yet. Be the first to send your blessings! 💕</div>';
 		        if (header) header.style.display = 'none';
+		        renderWishesPagination();
 		        return;
 		    }
 		    if (header) header.style.display = 'block';
-		    list.innerHTML = items.map((w, i) => {
+		    const totalPages = Math.max(1, Math.ceil(items.length / WISHES_PER_PAGE));
+		    currentWishPage = Math.min(Math.max(1, currentWishPage), totalPages);
+		    const start = (currentWishPage - 1) * WISHES_PER_PAGE;
+		    const pageItems = items.slice(start, start + WISHES_PER_PAGE);
+		    list.innerHTML = pageItems.map((w, i) => {
 		        const isAttending = w.kehadiran === 'Hadir';
 		        const tagClass = isAttending ? 'attending' : 'not-attending';
 		        const tagText  = isAttending ? 'Attending' : 'Not Attending';
@@ -2670,6 +2736,56 @@
 		            <div class="wish-card-message">"${escapeHtml(w.pesan)}"</div>
 		        </div>`;
 		    }).join('');
+		    renderWishesPagination();
+		}
+
+		function wishPageNumbers(current, total) {
+		    const delta = 1;
+		    const range = [];
+		    for (let i = 1; i <= total; i++) {
+		        if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+		            range.push(i);
+		        }
+		    }
+		    const withDots = [];
+		    let prev = 0;
+		    range.forEach(i => {
+		        if (prev) {
+		            if (i - prev === 2) withDots.push(prev + 1);
+		            else if (i - prev > 2) withDots.push('...');
+		        }
+		        withDots.push(i);
+		        prev = i;
+		    });
+		    return withDots;
+		}
+
+		function renderWishesPagination() {
+		    const container = document.getElementById('wishesPagination');
+		    if (!container) return;
+		    const totalItems = currentWishesData.length;
+		    const totalPages = Math.ceil(totalItems / WISHES_PER_PAGE);
+		    if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+		    let html = `<button class="wish-page-btn wish-page-nav" ${currentWishPage === 1 ? 'disabled' : ''} onclick="goToWishPage(${currentWishPage - 1})" aria-label="Previous page">‹</button>`;
+		    wishPageNumbers(currentWishPage, totalPages).forEach(p => {
+		        html += (p === '...')
+		            ? `<span class="wish-page-ellipsis">…</span>`
+		            : `<button class="wish-page-btn ${p === currentWishPage ? 'active' : ''}" onclick="goToWishPage(${p})">${p}</button>`;
+		    });
+		    html += `<button class="wish-page-btn wish-page-nav" ${currentWishPage === totalPages ? 'disabled' : ''} onclick="goToWishPage(${currentWishPage + 1})" aria-label="Next page">›</button>`;
+		    html += `<div class="wishes-page-info">Page ${currentWishPage} of ${totalPages} • ${totalItems} wishes</div>`;
+		    container.innerHTML = html;
+		}
+
+		function goToWishPage(page) {
+		    const totalPages = Math.max(1, Math.ceil(currentWishesData.length / WISHES_PER_PAGE));
+		    page = Math.min(Math.max(1, page), totalPages);
+		    if (page === currentWishPage) return;
+		    currentWishPage = page;
+		    paintWishesPage();
+		    const header = document.getElementById('wishesHeader');
+		    if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 		
 		async function loadWishes() {
