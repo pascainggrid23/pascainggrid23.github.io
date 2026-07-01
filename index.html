@@ -1930,7 +1930,7 @@
 		</div>
 
         <!-- Wish & Prayer -->
-		<div class="all-background">
+		<div class="all-background" id="wishesSection">
 			<section class="hero">
 				<h2 class="section-title">Wishes & Prayers</h2>
 				<div class="closing-message">
@@ -2069,14 +2069,21 @@
             const params = new URLSearchParams(window.location.search);
             const toName = (params.get('to') || '').trim();
             const guestNameEl = document.querySelector('.guest-name');
-            if (!guestNameEl) return;
-            if (toName) {
-                const inviteeEl = document.createElement('div');
-                inviteeEl.className = 'invitee-name';
-                inviteeEl.textContent = toName;
-                guestNameEl.insertAdjacentElement('afterend', inviteeEl);
-            } else {
-                guestNameEl.remove();
+            if (guestNameEl) {
+                if (toName) {
+                    const inviteeEl = document.createElement('div');
+                    inviteeEl.className = 'invitee-name';
+                    inviteeEl.textContent = toName;
+                    guestNameEl.insertAdjacentElement('afterend', inviteeEl);
+                } else {
+                    guestNameEl.remove();
+                }
+            }
+
+            // Wishes & Prayers section only applies to a named invitee
+            if (!toName) {
+                const wishesSection = document.getElementById('wishesSection');
+                if (wishesSection) wishesSection.remove();
             }
         })();
 
