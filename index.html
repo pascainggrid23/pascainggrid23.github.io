@@ -1544,8 +1544,19 @@
 
         .wish-attendance-options {
             display: flex;
-            gap: 12px;
+			justify-content: center;
+			align-items: center;
+			gap: 16px;
         }
+		
+		input[name="wishAttendance"] {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+			width: 0;
+			height: 0;
+			margin: 0;
+		}
 
         .wish-attendance-option {
             display: flex;
@@ -1940,10 +1951,10 @@
 							<div class="wish-attendance-label">Will you be attending?</div>
 							<div class="wish-attendance-options">
 								<label class="wish-attendance-option">
-									<input type="radio" name="wishAttendance" value="attending" checked> ✓ Attending
+									<input type="radio" name="wishAttendance" value="attending" checked>Attending
 								</label>
 								<label class="wish-attendance-option">
-									<input type="radio" name="wishAttendance" value="not-attending"> ✗ Not Attending
+									<input type="radio" name="wishAttendance" value="not-attending">Not Attending
 								</label>
 							</div>
 						</div>
@@ -2644,7 +2655,7 @@
 		    list.innerHTML = items.map((w, i) => {
 		        const isAttending = w.kehadiran === 'Hadir';
 		        const tagClass = isAttending ? 'attending' : 'not-attending';
-		        const tagText  = isAttending ? '✓ Attending' : '✗ Not Attending';
+		        const tagText  = isAttending ? 'Attending' : 'Not Attending';
 		        const timeStr  = w.waktu ? timeAgo(w.waktu) : '';
 		        return `<div class="wish-card" style="animation-delay:${i * 0.05}s">
 		            <div class="wish-card-name">🌸 ${escapeHtml(w.nama)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
