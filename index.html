@@ -2617,7 +2617,9 @@
 		}
 		
 		function timeAgo(timestamp) {
-		    const diff = Date.now() - timestamp;
+		    const time = new Date(timestamp).getTime();
+		    if (isNaN(time)) return '';
+		    const diff = Math.max(0, Date.now() - time);
 		    const minutes = Math.floor(diff / 60000);
 		    const hours   = Math.floor(diff / 3600000);
 		    const days    = Math.floor(diff / 86400000);
