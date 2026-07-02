@@ -330,8 +330,12 @@ Keluarga Bapak Hartono, 08211122233"></textarea>
     const CONFIG = {
         baseUrl: 'https://pascainggrid.my.id',
         coupleNames: 'Pascario & Inggriani',
-        waMessage: (name, link) =>
-            `Halo ${name}! 🎉\n\nDengan penuh sukacita, kami mengundang Anda untuk hadir di pernikahan kami:\n${CONFIG.coupleNames}\n\nBerikut link undangan digital untuk Anda:\n${link}`
+        waMessage: (name, link, type) => {
+            if (type === 'full') {
+                return `Dear ${name} ,\nWith hearts full of gratitude, we joyfully share our wedding day\n\nPascario Tri Yudanto\n\t\t&\nInggriani Priscilia\n\nSaturday, October 3rd, 2026\n13.00 | Holy Matrimony\n📍GKI Gunung Sahari\nJL Gunung Sahari 4 no 8 \nhttps://maps.app.goo.gl/tyA9wfVx5ekhbLdUA\n\n6 PM | Family Dinner\n📍Areom Mahakam\nJl. Mahakam No.15, RT.1/RW.6, Kramat Pela, Kec. Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12130\nhttps://maps.app.goo.gl/qgFvrrRQfcKT6Zqr8\n\nFor detailed information\n${link}\n\nKindly RSVP before 26 September 2026\n\nWe're looking forward for your presence and prayers as we celebrate\n\nWarm Regards, \nPasca & Inggri`;
+            }
+            return `Dear ${name} ,\nWith hearts full of gratitude, we joyfully share our wedding day\n\nPascario Tri Yudanto\n\t\t&\nInggriani Priscilia\n\nSaturday, October 3rd, 2026\n13.00 | Holy Matrimony\n📍GKI Gunung Sahari\nJL Gunung Sahari 4 no 8 \nhttps://maps.app.goo.gl/tyA9wfVx5ekhbLdUA\n\nFor detailed information\n${link}\n\nWe're looking forward for your presence and prayers as we celebrate\n\nWarm Regards, \nPasca & Inggriani`;
+        }
     };
     // ======= AKHIR KONFIGURASI =======
 
@@ -475,7 +479,7 @@ Keluarga Bapak Hartono, 08211122233"></textarea>
     function sendWa(index) {
         const g = guests[index];
         const link = buildLink(g.name, g.type);
-        const message = CONFIG.waMessage(g.name, link);
+        const message = CONFIG.waMessage(g.name, link, g.type);
         const waUrl = g.phone
             ? `https://wa.me/${g.phone}?text=${encodeURIComponent(message)}`
             : `https://wa.me/?text=${encodeURIComponent(message)}`;
