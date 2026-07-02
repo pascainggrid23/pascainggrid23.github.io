@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Generator Link Undangan - Pascario & Inggriani</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Baskervville&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Baskervville', serif;
+        color: #444;
+        padding: 30px 15px 100px;
+    }
+
+    .wrap {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        text-align: center;
+        color: white;
+        font-family: 'Playfair Display', serif;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        text-align: center;
+        color: rgba(255,255,255,0.85);
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 20px;
+        padding: 25px 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+    }
+
+    .panel h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        color: #764ba2;
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    .type-options {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .type-option {
+        flex: 1;
+        min-width: 140px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px;
+        border: 2px solid #e6d9f0;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+        background: #faf8fc;
+    }
+
+    .type-option:has(input:checked) {
+        border-color: #9370db;
+        background: #f0e8fc;
+        color: #6b4fa0;
+        font-weight: bold;
+    }
+
+    .type-option input { accent-color: #9370db; width: 16px; height: 16px; }
+
+    textarea#guestInput {
+        width: 100%;
+        min-height: 160px;
+        padding: 14px 16px;
+        border: 2px solid #e6d9f0;
+        border-radius: 12px;
+        font-size: 14px;
+        font-family: 'Baskervville', serif;
+        color: #444;
+        background: #faf8fc;
+        outline: none;
+        resize: vertical;
+        margin-bottom: 8px;
+    }
+
+    textarea#guestInput:focus {
+        border-color: #9370db;
+        box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.15);
+    }
+
+    .format-hint {
+        font-size: 12px;
+        color: #aaa;
+        margin-bottom: 18px;
+        line-height: 1.6;
+    }
+
+    .btn {
+        padding: 14px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 15px;
+        font-family: 'Baskervville', serif;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: white;
+        width: 100%;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-generate {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+    }
+
+    .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5); }
+
+    .results-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .results-count {
+        font-size: 14px;
+        color: #764ba2;
+        font-weight: bold;
+    }
+
+    .btn-copy-all {
+        background: linear-gradient(135deg, #9370db, #c6a0d9);
+        box-shadow: 0 5px 18px rgba(147, 112, 219, 0.35);
+        width: auto;
+        padding: 10px 20px;
+        font-size: 13px;
+    }
+
+    .btn-copy-all:hover { transform: translateY(-2px); }
+
+    .guest-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .guest-card {
+        background: #faf8fc;
+        border: 2px solid #e6d9f0;
+        border-radius: 14px;
+        padding: 16px;
+    }
+
+    .guest-card-name {
+        font-size: 16px;
+        font-weight: bold;
+        color: #764ba2;
+        margin-bottom: 2px;
+    }
+
+    .guest-card-phone {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 10px;
+    }
+
+    .guest-type-toggle {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .guest-type-toggle button {
+        flex: 1;
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 2px solid #e6d9f0;
+        background: white;
+        color: #888;
+        font-size: 12px;
+        font-family: 'Baskervville', serif;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .guest-type-toggle button.active {
+        border-color: #9370db;
+        background: #f0e8fc;
+        color: #6b4fa0;
+        font-weight: bold;
+    }
+
+    .link-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .link-input {
+        flex: 1;
+        padding: 10px 12px;
+        border: 2px solid #e6d9f0;
+        border-radius: 10px;
+        font-size: 12px;
+        color: #666;
+        background: white;
+        outline: none;
+        min-width: 0;
+    }
+
+    .icon-btn {
+        flex-shrink: 0;
+        width: 40px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #9370db, #c6a0d9);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .icon-btn.copied { background: linear-gradient(135deg, #25d366, #128c7e); }
+
+    .btn-wa {
+        background: linear-gradient(135deg, #25d366, #128c7e);
+        box-shadow: 0 5px 18px rgba(37, 211, 102, 0.35);
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .btn-wa:hover { transform: translateY(-2px); }
+
+    .empty-state {
+        text-align: center;
+        color: #bbb;
+        font-size: 14px;
+        padding: 20px;
+        font-style: italic;
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 20px;
+        right: 20px;
+        max-width: 660px;
+        margin: 0 auto;
+        background: #25d366;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+        z-index: 1001;
+        text-align: center;
+        display: none;
+    }
+</style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="page-title">🔗 Generator Link Undangan</div>
+        <div class="page-subtitle">Pascario & Inggriani — untuk penggunaan internal, jangan dibagikan ke tamu</div>
+
+        <div class="panel">
+            <h2>1. Tipe undangan default</h2>
+            <div class="type-options">
+                <label class="type-option">
+                    <input type="radio" name="defaultType" value="full" checked> Lengkap (RSVP + Family Dinner)
+                </label>
+                <label class="type-option">
+                    <input type="radio" name="defaultType" value="stream"> Streaming Saja
+                </label>
+            </div>
+
+            <h2>2. Daftar tamu</h2>
+            <label for="guestInput">Satu tamu per baris. Format: <code>Nama, No. WhatsApp</code> (nomor opsional)</label>
+            <textarea id="guestInput" placeholder="Budi Santoso, 081234567890
+Siti Aminah
+Keluarga Bapak Hartono, 08211122233"></textarea>
+            <div class="format-hint">Nomor WhatsApp boleh diawali 0, 62, atau +62. Kalau nomor tidak diisi, tombol "Kirim WA" akan membuka WhatsApp dan Anda memilih kontaknya sendiri.</div>
+
+            <button class="btn btn-generate" onclick="generateLinks()">🚀 Generate Link</button>
+        </div>
+
+        <div class="panel" id="resultsPanel" style="display:none;">
+            <div class="results-header">
+                <div class="results-count" id="resultsCount"></div>
+                <button class="btn btn-copy-all" onclick="copyAllLinks()">📋 Copy Semua Link</button>
+            </div>
+            <div class="guest-list" id="guestList"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+<script>
+    // ======= KONFIGURASI - EDIT DI SINI =======
+    const CONFIG = {
+        baseUrl: 'https://pascainggrid.my.id',
+        coupleNames: 'Pascario & Inggriani',
+        waMessage: (name, link) =>
+            `Halo ${name}! 🎉\n\nDengan penuh sukacita, kami mengundang Anda untuk hadir di pernikahan kami:\n${CONFIG.coupleNames}\n\nBerikut link undangan digital untuk Anda:\n${link}`
+    };
+    // ======= AKHIR KONFIGURASI =======
+
+    const STORAGE_KEY = 'invitation-generator-input';
+
+    let guests = []; // { name, phone, type }
+
+    const guestInputEl = document.getElementById('guestInput');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const guestListEl = document.getElementById('guestList');
+    const resultsCountEl = document.getElementById('resultsCount');
+
+    // Restore last input so accidental refresh doesn't lose a long guest list
+    (function restore() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) guestInputEl.value = saved;
+    })();
+
+    guestInputEl.addEventListener('input', () => {
+        localStorage.setItem(STORAGE_KEY, guestInputEl.value);
+    });
+
+    function normalizePhone(raw) {
+        if (!raw) return '';
+        let digits = raw.trim().replace(/[^\d+]/g, '');
+        if (digits.startsWith('+')) digits = digits.slice(1);
+        if (digits.startsWith('0')) digits = '62' + digits.slice(1);
+        return digits;
+    }
+
+    function buildLink(name, type) {
+        const path = type === 'full' ? '/full' : '';
+        return `${CONFIG.baseUrl}${path}/?to=${encodeURIComponent(name)}`;
+    }
+
+    function parseGuests(text, defaultType) {
+        return text
+            .split('\n')
+            .map(line => line.trim())
+            .filter(Boolean)
+            .map(line => {
+                const parts = line.split(',').map(p => p.trim());
+                const name = parts[0];
+                const phone = parts[1] ? normalizePhone(parts[1]) : '';
+                return { name, phone, type: defaultType };
+            })
+            .filter(g => g.name);
+    }
+
+    function generateLinks() {
+        guests = parseGuests(guestInputEl.value, getDefaultType());
+
+        if (!guests.length) {
+            resultsPanel.style.display = 'block';
+            resultsCountEl.textContent = '';
+            guestListEl.innerHTML = '<div class="empty-state">Masukkan minimal satu nama tamu di atas.</div>';
+            return;
+        }
+
+        resultsPanel.style.display = 'block';
+        renderGuestList();
+        resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function getDefaultType() {
+        const checked = document.querySelector('input[name="defaultType"]:checked');
+        return checked ? checked.value : 'full';
+    }
+
+    function renderGuestList() {
+        resultsCountEl.textContent = `${guests.length} link dibuat`;
+        guestListEl.innerHTML = guests.map((g, i) => {
+            const link = buildLink(g.name, g.type);
+            return `
+                <div class="guest-card">
+                    <div class="guest-card-name">🌸 ${escapeHtml(g.name)}</div>
+                    ${g.phone ? `<div class="guest-card-phone">📱 ${g.phone}</div>` : ''}
+                    <div class="guest-type-toggle">
+                        <button class="${g.type === 'full' ? 'active' : ''}" onclick="setGuestType(${i}, 'full')">Lengkap</button>
+                        <button class="${g.type === 'stream' ? 'active' : ''}" onclick="setGuestType(${i}, 'stream')">Streaming</button>
+                    </div>
+                    <div class="link-row">
+                        <input class="link-input" id="link-${i}" readonly value="${link}">
+                        <button class="icon-btn" id="copy-${i}" onclick="copyGuestLink(${i})">📋</button>
+                    </div>
+                    <button class="btn btn-wa" onclick="sendWa(${i})">💬 Kirim WA</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function setGuestType(index, type) {
+        guests[index].type = type;
+        renderGuestList();
+    }
+
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+        const tmp = document.createElement('textarea');
+        tmp.value = text;
+        tmp.style.position = 'fixed';
+        tmp.style.opacity = '0';
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        return Promise.resolve();
+    }
+
+    function copyGuestLink(index) {
+        const link = buildLink(guests[index].name, guests[index].type);
+        copyText(link).then(() => {
+            const btn = document.getElementById(`copy-${index}`);
+            btn.classList.add('copied');
+            btn.textContent = '✓';
+            showToast('✅ Link disalin!');
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.textContent = '📋';
+            }, 1500);
+        });
+    }
+
+    function copyAllLinks() {
+        if (!guests.length) { showToast('⚠️ Belum ada link. Generate dulu.'); return; }
+        const text = guests.map(g => `${g.name}: ${buildLink(g.name, g.type)}`).join('\n');
+        copyText(text).then(() => showToast('✅ Semua link disalin!'));
+    }
+
+    function sendWa(index) {
+        const g = guests[index];
+        const link = buildLink(g.name, g.type);
+        const message = CONFIG.waMessage(g.name, link);
+        const waUrl = g.phone
+            ? `https://wa.me/${g.phone}?text=${encodeURIComponent(message)}`
+            : `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2500);
+    }
+</script>
+</body>
+</html>
