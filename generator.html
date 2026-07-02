@@ -410,8 +410,8 @@ Keluarga Bapak Hartono, 08211122233"></textarea>
                     <div class="guest-card-name">🌸 ${escapeHtml(g.name)}</div>
                     ${g.phone ? `<div class="guest-card-phone">📱 ${g.phone}</div>` : ''}
                     <div class="guest-type-toggle">
-                        <button class="${g.type === 'full' ? 'active' : ''}" onclick="setGuestType(${i}, 'full')">Lengkap</button>
-                        <button class="${g.type === 'stream' ? 'active' : ''}" onclick="setGuestType(${i}, 'stream')">Streaming</button>
+                        <button class="${g.type === 'full' ? 'active' : ''}" onclick="setGuestType(${i}, 'full')">Lengkap (Gereja + Dinner)</button>
+                        <button class="${g.type === 'stream' ? 'active' : ''}" onclick="setGuestType(${i}, 'stream')">Gereja saja</button>
                     </div>
                     <div class="link-row">
                         <input class="link-input" id="link-${i}" readonly value="${link}">
