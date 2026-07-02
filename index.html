@@ -48,6 +48,18 @@
             color: #4a4a4a;*/
             overflow-x: hidden;
 			font-family: 'Baskervville', serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Keep form fields selectable/editable so guests can still type & edit their RSVP */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
 
         /* Overlay Cover - Tidak bisa skip */
@@ -2097,6 +2109,27 @@
     </div>
 
     <script>
+        // ======= Prevent text selection & copy (except on form fields) =======
+        (function () {
+            const isFormField = (el) => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+
+            document.addEventListener('selectstart', (e) => {
+                if (!isFormField(e.target)) e.preventDefault();
+            });
+
+            document.addEventListener('copy', (e) => {
+                if (!isFormField(e.target)) e.preventDefault();
+            });
+
+            document.addEventListener('cut', (e) => {
+                if (!isFormField(e.target)) e.preventDefault();
+            });
+
+            document.addEventListener('contextmenu', (e) => {
+                if (!isFormField(e.target)) e.preventDefault();
+            });
+        })();
+
         // ======= KONFIGURASI - EDIT DI SINI =======
         const CONFIG = {
             weddingDate: '2026-10-03T10:00:00',
