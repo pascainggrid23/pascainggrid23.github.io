@@ -481,8 +481,8 @@ Keluarga Bapak Hartono, 08211122233"></textarea>
         const link = buildLink(g.name, g.type);
         const message = CONFIG.waMessage(g.name, link, g.type);
         const waUrl = g.phone
-            ? `https://wa.me/${g.phone}?text=${encodeURIComponent(message)}`
-            : `https://wa.me/?text=${encodeURIComponent(message)}`;
+            ? `https://api.whatsapp.com/send?phone=${g.phone}&text=${encodeURIComponent(message)}`
+            : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
         window.open(waUrl, '_blank', 'noopener,noreferrer');
     }
 
