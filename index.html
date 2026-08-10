@@ -56,15 +56,18 @@
         }
 
         /* Satu layer background tetap (fixed) supaya fotonya konsisten dari atas ke bawah halaman */
-        body::before {
-            content: '';
+        /* Elemen asli (bukan pseudo-element + z-index negatif) supaya aman di browser MIUI/Xiaomi */
+        #pageBg {
             position: fixed;
             inset: 0;
-            z-index: -1;
+            z-index: 0;
             background-image: url('Images/hero-bg.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
         }
 
         /* Keep form fields selectable/editable so guests can still type & edit their RSVP */
@@ -226,6 +229,8 @@
         }
 
         .container {
+            position: relative;
+            z-index: 1;
             max-width: 100%;
             margin: 0 auto;
             background: transparent;
@@ -1802,6 +1807,7 @@
     </style>
 </head>
 <body>
+    <div id="pageBg"></div>
     <!-- Cover Overlay - Tidak bisa skip -->
     <div class="cover-overlay" id="coverOverlay">
         <div class="cover-content">
