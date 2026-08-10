@@ -44,6 +44,7 @@
 
         html {
             background: #e8dff5;
+            overscroll-behavior-y: none;
         }
 
         body {
@@ -55,6 +56,7 @@
             /*background: linear-gradient(to bottom, #E0B0FF, #B0E0E6);
             color: #4a4a4a;*/
             overflow-x: hidden;
+            overscroll-behavior-y: none;
             position: relative;
 			font-family: 'Baskervville', serif;
             -webkit-user-select: none;
@@ -331,6 +333,8 @@
 
         /* Halaman Pembuka */
 		.all-background{
+			content-visibility: auto;
+			contain-intrinsic-size: auto 600px;
 		}
 		
         .hero p {
