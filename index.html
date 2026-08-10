@@ -99,9 +99,9 @@
 		
 		.cover-container {
             position: relative;
-            background: linear-gradient(rgba(198, 160, 217, 0.2), rgba(255, 182, 193, 0.2)),
-                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920"><rect fill="%23e8dff5" width="1080" height="1920"/></svg>');
-            background-size: cover;
+            background-image: linear-gradient(135deg, rgba(224, 208, 245, 0.82), rgba(198, 176, 230, 0.82)),
+                        url('Images/hero-bg.jpg');
+            background-size: contain;
             background-position: center;
             backdrop-filter: blur(20px);
             border-radius: 30px;
@@ -2744,9 +2744,12 @@
             }
         }
 
-        // Double back-press to exit (mobile back button guard)
-        let exitConfirmPending = false;
-        let exitConfirmTimer = null;
+        // Double back-press to exit (mobile back button guard).
+        // One-shot: only the first back press is intercepted; every press after that
+        // is left alone. Browsers (Chromium/Brave) detect and disable repeated
+        // pushState-on-popstate traps as an anti-abuse measure, so trying to
+        // re-arm the guard on every press is not reliable.
+        let exitWarned = false;
         history.pushState({ appGuard: true }, '');
 
         window.addEventListener('popstate', () => {
@@ -2755,12 +2758,10 @@
                 performLightboxClose();
                 return;
             }
-            if (!exitConfirmPending) {
-                exitConfirmPending = true;
+            if (!exitWarned) {
+                exitWarned = true;
                 showToast('Press back again to exit');
                 setTimeout(() => { history.pushState({ appGuard: true }, ''); }, 0);
-                clearTimeout(exitConfirmTimer);
-                exitConfirmTimer = setTimeout(() => { exitConfirmPending = false; }, 2000);
             }
         });
 
