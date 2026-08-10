@@ -1782,7 +1782,7 @@
 
         .wishes-empty {
             text-align: center;
-            color: #bbb;
+            color: #000;
             font-size: 15px;
             padding: 30px 20px;
             font-style: italic;
@@ -2709,18 +2709,9 @@
             lightboxImg.style.transform = '';
         }
 
-		function openLightbox(index) {
-            currentIndex = index;
-            resetZoom();
-            lightboxImg.src = photos[currentIndex];
-            lightboxContent.classList.remove('closing');
-            lightbox.classList.remove('closing');
-            lightbox.classList.add('active');
-            updateCounter();
-            document.body.style.overflow = 'hidden';
-        }
+		let lightboxOpenViaHistory = false;
 
-        function closeLightbox() {
+        function performLightboxClose() {
             resetZoom();
             lightboxContent.classList.add('closing');
             lightbox.classList.add('closing');
@@ -2730,6 +2721,48 @@
                 document.body.style.overflow = 'auto';
             }, 300);
         }
+
+		function openLightbox(index) {
+            currentIndex = index;
+            resetZoom();
+            lightboxImg.src = photos[currentIndex];
+            lightboxContent.classList.remove('closing');
+            lightbox.classList.remove('closing');
+            lightbox.classList.add('active');
+            updateCounter();
+            document.body.style.overflow = 'hidden';
+            history.pushState({ lightboxOpen: true }, '');
+            lightboxOpenViaHistory = true;
+        }
+
+        function closeLightbox() {
+            if (!lightbox.classList.contains('active')) return;
+            if (lightboxOpenViaHistory) {
+                history.back();
+            } else {
+                performLightboxClose();
+            }
+        }
+
+        // Double back-press to exit (mobile back button guard)
+        let exitConfirmPending = false;
+        let exitConfirmTimer = null;
+        history.pushState({ appGuard: true }, '');
+
+        window.addEventListener('popstate', () => {
+            if (lightboxOpenViaHistory) {
+                lightboxOpenViaHistory = false;
+                performLightboxClose();
+                return;
+            }
+            if (!exitConfirmPending) {
+                exitConfirmPending = true;
+                showToast('Press back again to exit');
+                setTimeout(() => { history.pushState({ appGuard: true }, ''); }, 0);
+                clearTimeout(exitConfirmTimer);
+                exitConfirmTimer = setTimeout(() => { exitConfirmPending = false; }, 2000);
+            }
+        });
 
         function changeImage(direction) {
             resetZoom();
