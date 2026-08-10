@@ -342,7 +342,7 @@
         .hero {
             min-height: 40vh;
             position: relative;
-            background-image: linear-gradient(rgba(255, 250, 245, 0.8), rgba(255, 250, 245, 0.8)),
+            background-image: linear-gradient(135deg, rgba(224, 208, 245, 0.82), rgba(198, 176, 230, 0.82)),
                         url('Images/hero-bg.jpg');
             background-size: 100% 100%;
             background-position: center;
@@ -1144,7 +1144,7 @@
         .closing {
             min-height: 40vh;
             position: relative;
-            background-image: linear-gradient(rgba(255, 250, 245, 0.8), rgba(255, 250, 245, 0.8)),
+            background-image: linear-gradient(135deg, rgba(224, 208, 245, 0.82), rgba(198, 176, 230, 0.82)),
                         url('Images/hero-bg.jpg');
             background-size: 100% 100%;
             background-position: center;
@@ -1231,7 +1231,7 @@
             font-size: 36px;
             font-family: 'Brush Script MT', cursive;
             margin-top: 5px;
-            background: linear-gradient(135deg, #c6a0d9, #ffb6c1);
+            background: linear-gradient(135deg, #7c4dab, #4a2c73);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -1635,14 +1635,50 @@
             font-size: 20px;
             color: #9370db;
             font-weight: bold;
-            margin: 10px 0 20px;
+            margin: 10px 0 30px;
             text-align: center;
+            position: relative;
+        }
+
+        .wishes-header::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 20'%3E%3Cg stroke='%23c9a15a' stroke-width='1' fill='none'%3E%3Cline x1='0' y1='10' x2='42' y2='10'/%3E%3Cline x1='68' y1='10' x2='110' y2='10'/%3E%3Ccircle cx='55' cy='10' r='4.5' fill='none' stroke='%23c9a15a' stroke-width='1'/%3E%3C/g%3E%3Cpath d='M55 3 L61 10 L55 17 L49 10 Z' fill='%23c9a15a'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
         .wishes-list {
             display: flex;
             flex-direction: column;
             gap: 5px;
+            max-height: 620px;
+            overflow-y: auto;
+            padding-right: 6px;
+            scroll-behavior: smooth;
+        }
+
+        .wishes-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .wishes-list::-webkit-scrollbar-track {
+            background: #f3ecf9;
+            border-radius: 10px;
+        }
+
+        .wishes-list::-webkit-scrollbar-thumb {
+            background: #c6a0d9;
+            border-radius: 10px;
+        }
+
+        .wishes-list::-webkit-scrollbar-thumb:hover {
+            background: #9370db;
         }
 
         .wishes-pagination {
@@ -1707,7 +1743,7 @@
             width: 100%;
             text-align: center;
             font-size: 12px;
-            color: #bbb;
+            color: #000;
             margin-top: 10px;
         }
 
@@ -2154,7 +2190,7 @@
 							<input readonly class="account-number" type="text" id="bankAccount" value="000033263989" style="border: none;outline: none; text-align: center; pointer-events: none;">
 						</div>
 						<button class="copy-btn" onclick="copyToClipboard('bankAccount', this)">
-							<span>📋</span> Copy account number
+							Copy account number
 						</button>
 					</div>
 					
@@ -2169,7 +2205,7 @@
 							<input readonly class="account-number" type="text" id="emoney" value="6043064334" style="border: none;outline: none; text-align: center; pointer-events: none;">
 						</div>
 						<button class="copy-btn" onclick="copyToClipboard('emoney', this)">
-							<span>📋</span> Copy account number
+							Copy account number
 						</button>
 					</div>
 				</div>
@@ -2186,7 +2222,7 @@
 				</div>
 				<div class="story-content" style="margin-top: 30px; text-align: left;">
 					<div class="wish-form-container">
-						<div class="wish-form-title">💌 Leave Your Wishes & Prayers</div>
+						<div class="wish-form-title">Leave Your Wishes & Prayers</div>
 						<input
 							type="text"
 							class="wish-field"
@@ -2214,10 +2250,10 @@
 						></textarea>
 						<div class="wish-char-count" id="wishCharCount">0 / 300</div>
 						<button class="wish-submit-btn" onclick="submitWish()">
-							<span>🙏</span> Send Wishes & Prayers
+							Send Wishes & Prayers
 						</button>
 					</div>
-					<div class="wishes-header" id="wishesHeader" style="display:none;">✨ Wishes & Prayers from Beloved Guests</div>
+					<div class="wishes-header" id="wishesHeader" style="display:none;">What our beloved guests say</div>
 					<div class="wishes-list" id="wishesList"></div>
 					<div class="wishes-pagination" id="wishesPagination"></div>
 				</div>
@@ -2575,7 +2611,7 @@
                 showToast('✅ Number copied successfully!');
                 setTimeout(() => {
                     button.classList.remove('copied');
-                    button.innerHTML = '<span>📋</span> Copy account number';
+                    button.innerHTML = 'Copy account number';
                 }, 2000);
             };
             if (navigator.clipboard && window.isSecureContext) {
@@ -2962,11 +2998,12 @@
 		        const tagText  = isAttending ? 'Attending' : 'Not Attending';
 		        const timeStr  = w.waktu ? timeAgo(w.waktu) : '';
 		        return `<div class="wish-card" style="animation-delay:${i * 0.05}s">
-		            <div class="wish-card-name">🌸 ${escapeHtml(w.nama)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
+		            <div class="wish-card-name">${escapeHtml(w.nama)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
 		            ${timeStr ? `<div class="wish-card-time">${timeStr}</div>` : ''}
 		            <div class="wish-card-message">"${escapeHtml(w.pesan)}"</div>
 		        </div>`;
 		    }).join('');
+		    list.scrollTop = 0;
 		    renderWishesPagination();
 		}
 
@@ -3015,8 +3052,6 @@
 		    if (page === currentWishPage) return;
 		    currentWishPage = page;
 		    paintWishesPage();
-		    const header = document.getElementById('wishesHeader');
-		    if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 		
 		async function loadWishes() {
@@ -3077,7 +3112,7 @@
 		        renderWishes(demoWishes);
 		        afterWishSent(nameEl, msgEl, btn);
 		    } catch (err) {
-		        if (btn) { btn.disabled = false; btn.innerHTML = '<span>🙏</span> Send Wishes & Prayers'; }
+		        if (btn) { btn.disabled = false; btn.innerHTML = 'Send Wishes & Prayers'; }
 		        showToast('❌ Failed to send. Please check your connection and try again.');
 		    }
 		}
@@ -3090,8 +3125,8 @@
 		    if (defaultRadio) defaultRadio.checked = true;
 		    const toParam = new URLSearchParams(window.location.search).get('to');
 		    if (nameEl && (!toParam || !toParam.trim())) nameEl.value = '';
-		    if (btn) { btn.disabled = false; btn.innerHTML = '<span>🙏</span> Send Wishes & Prayers'; }
-		    showToast('🙏 Your wishes & prayers have been sent!');
+		    if (btn) { btn.disabled = false; btn.innerHTML = 'Send Wishes & Prayers'; }
+		    showToast('Your wishes & prayers have been sent!');
 		}
 		
 		document.addEventListener('DOMContentLoaded', function () {
