@@ -2461,15 +2461,6 @@
             }
         });
 
-        const FALLBACK_SONGS = [
-            '/wedding%20music/atlasaudio-elegant-522420.mp3',
-            '/wedding%20music/atlasaudio-love-piano-520077.mp3',
-            '/wedding%20music/jonasblakewood-wedding-519603.mp3',
-            '/wedding%20music/prettyjohn1-romantic-saxophone-486821.mp3',
-            '/wedding%20music/the_mountain-romantic-481761.mp3',
-            '/wedding%20music/the_mountain-wedding-522480.mp3'
-        ];
-
         function shuffle(arr) {
             for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -2478,23 +2469,46 @@
             return arr;
         }
 
+        // Playlist selalu dibaca langsung dari isi folder "wedding music" — tidak ada nama
+        // file yang di-hardcode. GitHub Pages tidak punya directory listing (404 kalau folder
+        // diakses langsung), jadi di production tetap wajib lewat GitHub API. Tapi saat dites
+        // lokal lewat local server (mis. `python -m http.server`), server itu otomatis bikin
+        // halaman daftar isi folder — jadi kita baca folder itu langsung supaya perubahan file
+        // lokal (belum di-push) langsung kelihatan juga.
+        const IS_LOCAL_DEV = ['localhost', '127.0.0.1'].includes(location.hostname);
+
+        async function fetchPlaylistFromLocalFolder() {
+            const resp = await fetch('/wedding%20music/');
+            const html = await resp.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return Array.from(doc.querySelectorAll('a[href$=".mp3" i]'))
+                .map(a => new URL(a.getAttribute('href'), resp.url).href);
+        }
+
+        async function fetchPlaylistFromGithubApi() {
+            const resp = await fetch('https://api.github.com/repos/pascainggrid23/pascainggrid23.github.io/contents/wedding%20music');
+            const files = await resp.json();
+            return files
+                .filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.mp3'))
+                .map(f => f.download_url);
+        }
+
         async function loadAndStartPlaylist() {
             try {
-                const resp = await fetch('https://api.github.com/repos/pascainggrid23/pascainggrid23.github.io/contents/wedding%20music');
-                const files = await resp.json();
-                playlist = files
-                    .filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.mp3'))
-                    .map(f => f.download_url);
+                playlist = IS_LOCAL_DEV
+                    ? await fetchPlaylistFromLocalFolder()
+                    : await fetchPlaylistFromGithubApi();
             } catch (e) {
                 playlist = [];
             }
-            if (!playlist.length) playlist = [...FALLBACK_SONGS];
+            if (!playlist.length) return;
             shuffle(playlist);
             currentTrack = 0;
             playTrack(currentTrack);
         }
 
         function playTrack(index) {
+            if (!playlist.length) return;
             music.src = playlist[index];
             music.play().then(() => {
                 isPlaying = true;
