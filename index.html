@@ -1529,13 +1529,11 @@
         }
 
         /* Invitee name - shown below Mr./Mrs. when ?to= param is set */
+        /* Solid warm gold, distinct from the bride & groom's blue-violet .cover-names/.hero-names gradient */
         .invitee-name {
             font-family: 'Great Vibes', cursive;
             font-size: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #b3872f;
             margin: 6px 0 15px;
             animation: fadeInUp 1.5s ease 0.5s both;
             letter-spacing: 1px;
@@ -1865,6 +1863,11 @@
             background: #f0e8fc;
             color: #6b4fa0;
             font-weight: bold;
+        }
+
+        .wish-attendance-option:has(input:disabled) {
+            cursor: not-allowed;
+            opacity: 0.75;
         }
 
         .wish-attendance-option input[type="radio"] {
@@ -2243,15 +2246,16 @@
 							id="wishName"
 							placeholder="Your Name"
 							maxlength="60"
+							onblur="this.value = capitalizeName(this.value)"
 						>
 						<div class="wish-attendance-group">
 							<div class="wish-attendance-label">Will you be attending?</div>
 							<div class="wish-attendance-options">
 								<label class="wish-attendance-option">
-									<input type="radio" name="wishAttendance" value="attending" checked>Attending
+									<input type="radio" name="wishAttendance" value="attending" checked>Yes
 								</label>
 								<label class="wish-attendance-option">
-									<input type="radio" name="wishAttendance" value="not-attending">Not Attending
+									<input type="radio" name="wishAttendance" value="not-attending">No
 								</label>
 							</div>
 						</div>
@@ -2389,7 +2393,7 @@
         // Invitee name from ?to= URL parameter (runs after SPA redirect restoration)
         (function() {
             const params = new URLSearchParams(window.location.search);
-            const toName = (params.get('to') || '').trim();
+            const toName = capitalizeName(params.get('to') || '');
             const guestNameEl = document.querySelector('.guest-name');
             if (guestNameEl) {
                 if (toName) {
@@ -3046,7 +3050,7 @@
 		        const tagText  = isAttending ? 'Attending' : 'Not Attending';
 		        const timeStr  = w.waktu ? timeAgo(w.waktu) : '';
 		        return `<div class="wish-card" style="animation-delay:${i * 0.05}s">
-		            <div class="wish-card-name">${escapeHtml(w.nama)}<span class="wish-tag ${tagClass}">${tagText}</span></div>
+		            <div class="wish-card-name">${escapeHtml(capitalizeName(w.nama))}<span class="wish-tag ${tagClass}">${tagText}</span></div>
 		            ${timeStr ? `<div class="wish-card-time">${timeStr}</div>` : ''}
 		            <div class="wish-card-message">"${escapeHtml(w.pesan)}"</div>
 		        </div>`;
@@ -3120,12 +3124,20 @@
 		    return (n || '').trim().toLowerCase();
 		}
 
-		function hasAlreadySubmittedWish(name) {
+		function capitalizeName(n) {
+		    return (n || '').trim().replace(/(^|\s)\S/g, c => c.toUpperCase());
+		}
+
+		function findExistingWish(name) {
 		    const norm = normalizeWishName(name);
-		    if (!norm) return false;
+		    if (!norm) return null;
 		    // Sumber kebenaran adalah data dari server (Google Sheet), bukan localStorage,
 		    // supaya deteksi "sudah pernah kirim" tetap berlaku walau dibuka dari device lain.
-		    return currentWishesData.some(w => normalizeWishName(w.nama) === norm);
+		    return currentWishesData.find(w => normalizeWishName(w.nama) === norm) || null;
+		}
+
+		function hasAlreadySubmittedWish(name) {
+		    return !!findExistingWish(name);
 		}
 
 		function lockWishForm(message, opts) {
@@ -3139,6 +3151,14 @@
 		    if (nameEl) nameEl.readOnly = true;
 		    if (msgEl)  msgEl.readOnly  = true;
 		    if (btn)    { btn.disabled = true; btn.innerHTML = 'Already Sent ✓'; }
+
+		    // Kunci pilihan kehadiran ke jawaban yang dulu pernah dikirim.
+		    const radios = document.querySelectorAll('input[name="wishAttendance"]');
+		    if (opts.attending) {
+		        radios.forEach(r => { r.checked = (r.value === opts.attending); });
+		    }
+		    radios.forEach(r => { r.disabled = true; });
+
 		    if (message) {
 		        let note = container.querySelector('.wish-locked-note');
 		        if (!note) {
@@ -3157,8 +3177,10 @@
 		    const toParam = new URLSearchParams(window.location.search).get('to');
 		    const nameEl  = document.getElementById('wishName');
 		    const name = (toParam && toParam.trim()) ? toParam.trim() : (nameEl ? nameEl.value : '');
-		    if (name && hasAlreadySubmittedWish(name)) {
-		        lockWishForm('You have already sent your wishes & prayers. Thank you! 💕', { silent: true });
+		    const existing = name ? findExistingWish(name) : null;
+		    if (existing) {
+		        const attending = existing.kehadiran === 'Hadir' ? 'attending' : 'not-attending';
+		        lockWishForm('You have already sent your wishes & prayers. Thank you! 💕', { silent: true, attending });
 		    }
 		}
 
@@ -3166,11 +3188,12 @@
 		    const nameEl       = document.getElementById('wishName');
 		    const msgEl        = document.getElementById('wishMessage');
 		    const attendanceEl = document.querySelector('input[name="wishAttendance"]:checked');
-		    const name      = (nameEl ? nameEl.value : '').trim();
+		    const name      = capitalizeName(nameEl ? nameEl.value : '');
 		    const message   = (msgEl  ? msgEl.value  : '').trim();
 		    const attending = attendanceEl ? attendanceEl.value : 'attending';
 		    if (!name)    { showToast('⚠️ Please enter your name!');             nameEl && nameEl.focus(); return; }
 		    if (!message) { showToast('⚠️ Please write your wishes & prayers!'); msgEl  && msgEl.focus();  return; }
+		    if (nameEl) nameEl.value = name;
 
 		    const btn = document.querySelector('.wish-submit-btn');
 		    if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Sending…'; }
@@ -3178,8 +3201,10 @@
 		    // Ambil ulang data terbaru dari server sebelum cek duplikat,
 		    // supaya submit dari device lain dengan nama yang sama tetap terdeteksi.
 		    if (!WISH_DEMO) await loadWishes();
-		    if (hasAlreadySubmittedWish(name)) {
-		        lockWishForm('⚠️ You have already sent your wishes & prayers!');
+		    const existing = findExistingWish(name);
+		    if (existing) {
+		        const prevAttending = existing.kehadiran === 'Hadir' ? 'attending' : 'not-attending';
+		        lockWishForm('⚠️ You have already sent your wishes & prayers!', { attending: prevAttending });
 		        return;
 		    }
 		
@@ -3193,7 +3218,7 @@
 		    if (WISH_DEMO) {
 		        demoWishes.unshift({ nama: entry.nama, kehadiran: entry.kehadiran, pesan: entry.pesan, waktu: entry.waktu });
 		        renderWishes(demoWishes);
-		        afterWishSent(nameEl, msgEl, btn);
+		        afterWishSent(nameEl, msgEl, btn, attending);
 		        return;
 		    }
 		
@@ -3212,19 +3237,17 @@
 		        // Server konfirmasi tersimpan -> tampilkan wish baru
 		        demoWishes.unshift({ nama: entry.nama, kehadiran: entry.kehadiran, pesan: entry.pesan, waktu: entry.waktu });
 		        renderWishes(demoWishes);
-		        afterWishSent(nameEl, msgEl, btn);
+		        afterWishSent(nameEl, msgEl, btn, attending);
 		    } catch (err) {
 		        if (btn) { btn.disabled = false; btn.innerHTML = 'Send Wishes & Prayers'; }
 		        showToast('❌ Failed to send. Please check your connection and try again.');
 		    }
 		}
 		
-		function afterWishSent(nameEl, msgEl, btn) {
+		function afterWishSent(nameEl, msgEl, btn, attending) {
 		    const countEl = document.getElementById('wishCharCount');
 		    if (countEl) countEl.textContent = '0 / 300';
-		    const defaultRadio = document.querySelector('input[name="wishAttendance"][value="attending"]');
-		    if (defaultRadio) defaultRadio.checked = true;
-		    lockWishForm();
+		    lockWishForm(null, { attending });
 		    showToast('Your wishes & prayers have been sent! Thank you 💕');
 		}
 
@@ -3232,7 +3255,7 @@
 		    const toParam = new URLSearchParams(window.location.search).get('to');
 		    const nameEl  = document.getElementById('wishName');
 		    if (nameEl && toParam && toParam.trim()) {
-		        nameEl.value    = toParam.trim();
+		        nameEl.value    = capitalizeName(toParam);
 		        nameEl.readOnly = true;
 		    }
 		    await loadWishes();
