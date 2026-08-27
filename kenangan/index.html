@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kamera Kenangan — Pasca &amp; Inggrid</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --film-black:#191512;
+    --film-dark:#241f1a;
+    --paper:#F6F0E3;
+    --paper-dim:#d9d2c2;
+    --amber:#E9A63C;
+    --stamp:#F0862E;
+    --rec:#D64533;
+    --line:rgba(246,240,227,.14);
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--film-black);
+    color:var(--paper);
+    font-family:'Space Mono',monospace;
+    font-size:14px;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  body::before{ /* film grain */
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:1;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .screen{display:none;min-height:100dvh;flex-direction:column;position:relative;z-index:2}
+  .screen.on{display:flex}
+  .wrap{width:100%;max-width:520px;margin:0 auto;padding:24px 20px;flex:1;display:flex;flex-direction:column}
+
+  /* ---------- film strip header ---------- */
+  .sprocket{height:26px;display:flex;gap:14px;justify-content:center;align-items:center;overflow:hidden;flex-shrink:0}
+  .sprocket i{width:16px;height:11px;border-radius:3px;background:var(--film-dark);border:1px solid var(--line);flex-shrink:0}
+
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--amber)}
+  h1.names{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,9vw,46px);
+    line-height:1.08;letter-spacing:.01em;margin:10px 0 4px;
+  }
+  h1.names em{font-style:italic;color:var(--amber)}
+  .sub{color:var(--paper-dim);font-size:12px}
+
+  /* ---------- canister card ---------- */
+  .canister{
+    margin:26px 0 18px;border:1px solid var(--line);border-radius:var(--radius);
+    background:linear-gradient(160deg,var(--film-dark),#1d1915 70%);
+    padding:20px 18px;position:relative;overflow:hidden;
+  }
+  .canister::after{
+    content:"ISO WEDDING · 15 EXP";position:absolute;top:12px;right:-34px;transform:rotate(38deg);
+    font-size:9px;letter-spacing:.2em;color:var(--film-black);background:var(--amber);
+    padding:3px 40px;font-weight:700;
+  }
+  .canister h2{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:8px}
+  .canister p{color:var(--paper-dim);font-size:12.5px}
+  .rules{margin-top:14px;display:grid;gap:8px}
+  .rules div{display:flex;gap:10px;align-items:baseline;font-size:12.5px}
+  .rules b{color:var(--amber);font-weight:700;min-width:34px}
+
+  label{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-dim);margin:18px 0 8px}
+  input[type=text],input[type=password]{
+    width:100%;background:var(--film-dark);border:1px solid var(--line);border-radius:10px;
+    color:var(--paper);font-family:inherit;font-size:15px;padding:13px 14px;outline:none;
+  }
+  input:focus-visible{border-color:var(--amber)}
+
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    border:none;border-radius:12px;padding:15px 18px;cursor:pointer;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.06em;
+  }
+  .btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .btn-amber{background:var(--amber);color:var(--film-black)}
+  .btn-ghost{background:transparent;color:var(--paper-dim);border:1px solid var(--line)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .stack{display:grid;gap:10px;margin-top:16px}
+  .note{font-size:11px;color:var(--paper-dim);margin-top:14px;text-align:center}
+  .err{color:#f2a08c;font-size:12px;margin-top:10px;display:none}
+
+  /* ---------- camera ---------- */
+  #camScreen{background:#000}
+  .cam-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px;font-size:12px;letter-spacing:.12em;
+  }
+  .cam-top .rec{display:flex;align-items:center;gap:7px;color:var(--paper-dim)}
+  .cam-top .rec i{width:9px;height:9px;border-radius:50%;background:var(--rec);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .counterbox{
+    border:1px solid var(--line);border-radius:9px;padding:5px 12px;
+    background:rgba(25,21,18,.7);color:var(--amber);font-weight:700;
+  }
+  .viewfinder{
+    position:relative;flex:1;min-height:0;background:#0a0908;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .viewfinder video{width:100%;height:100%;object-fit:cover}
+  .viewfinder.mirror video{transform:scaleX(-1)}
+  .vf-corner{position:absolute;width:26px;height:26px;border:2px solid rgba(246,240,227,.75);pointer-events:none}
+  .vf-corner.tl{top:16px;left:16px;border-right:0;border-bottom:0}
+  .vf-corner.tr{top:16px;right:16px;border-left:0;border-bottom:0}
+  .vf-corner.bl{bottom:16px;left:16px;border-right:0;border-top:0}
+  .vf-corner.br{bottom:16px;right:16px;border-left:0;border-top:0}
+  .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
+  .flash.go{opacity:.9;transition:none}
+  .stampline{position:absolute;right:16px;bottom:16px;color:var(--stamp);font-size:13px;font-weight:700;text-shadow:0 0 6px rgba(0,0,0,.6)}
+  .uploadline{position:absolute;left:16px;bottom:16px;color:var(--paper);font-size:11px;letter-spacing:.1em;background:rgba(25,21,18,.7);border:1px solid var(--line);border-radius:8px;padding:4px 10px;opacity:0;transition:opacity .2s}
+  .uploadline.show{opacity:1}
+  .cam-fallback{
+    position:absolute;inset:0;display:none;flex-direction:column;gap:14px;
+    align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--paper-dim);font-size:12.5px;
+  }
+  .cam-bottom{padding:16px 18px calc(20px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .roundbtn{
+    width:52px;height:52px;border-radius:50%;border:1px solid var(--line);
+    background:var(--film-dark);color:var(--paper);font-size:19px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .shutter{
+    width:78px;height:78px;border-radius:50%;border:4px solid var(--paper);
+    background:radial-gradient(circle at 34% 30%,#ffcf7d,var(--amber) 60%);
+    cursor:pointer;flex-shrink:0;box-shadow:0 0 0 6px rgba(233,166,60,.15);
+  }
+  .shutter:active{transform:scale(.93)}
+  .shutter[disabled]{filter:grayscale(1);opacity:.4}
+  .mystrip{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;background:var(--film-black)}
+  .mystrip img{height:52px;border-radius:6px;border:1px solid var(--line)}
+  .mystrip:empty{display:none}
+
+  /* ---------- done ---------- */
+  .bigcount{font-family:'Fraunces',serif;font-size:72px;font-weight:700;color:var(--amber);line-height:1}
+
+  /* ---------- host ---------- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+  .stat{border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;background:var(--film-dark)}
+  .stat b{display:block;font-family:'Fraunces',serif;font-size:26px;color:var(--amber)}
+  .stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-dim)}
+  .qrbox{background:var(--paper);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;margin:8px 0 18px}
+  .qrbox .cap{color:var(--film-black);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}
+  .gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+  .hostlink{margin-top:auto;padding-top:26px;text-align:center}
+  .hostlink button{background:none;border:none;color:var(--paper-dim);font-family:inherit;font-size:11px;letter-spacing:.14em;cursor:pointer;text-decoration:underline dotted}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ WELCOME (TAMU) ============ -->
+<section class="screen on" id="welcomeScreen">
+  <div class="sprocket" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow">Kamera Kenangan</p>
+    <h1 class="names">Pasca <em>&amp;</em> Inggrid</h1>
+    <p class="sub" id="dateSub">Jakarta · 2026</p>
+
+    <div class="canister">
+      <h2>Satu rol film untukmu</h2>
+      <p>Bantu kami mengabadikan hari ini dari sudut pandangmu. Tanpa aplikasi — cukup dari browser ini.</p>
+      <div class="rules">
+        <div><b>15</b><span>jepretan per tamu — pakai dengan bijak, tidak bisa dihapus ✨</span></div>
+        <div><b>1</b><span>album bersama — semua foto masuk ke galeri mempelai</span></div>
+      </div>
+    </div>
+
+    <label for="guestName">Nama kamu (opsional)</label>
+    <input type="text" id="guestName" maxlength="40" placeholder="cth. Ai — meja 12" autocomplete="off">
+
+    <div class="stack">
+      <button class="btn btn-amber" id="startBtn">📸 Mulai Memotret</button>
+    </div>
+    <p class="err" id="welcomeErr"></p>
+    <p class="note" id="capNote"></p>
+
+    <div class="hostlink"><button id="hostLink">Mode Panitia / Mempelai</button></div>
+  </div>
+  <div class="sprocket" aria-hidden="true"></div>
+</section>
+
+<!-- ============ CAMERA ============ -->
+<section class="screen" id="camScreen">
+  <div class="cam-top">
+    <span class="rec"><i></i>FILM • JALAN</span>
+    <span class="counterbox">SISA <span id="shotsLeft">15</span></span>
+  </div>
+  <div class="viewfinder" id="viewfinder">
+    <video id="video" autoplay playsinline muted></video>
+    <span class="vf-corner tl"></span><span class="vf-corner tr"></span>
+    <span class="vf-corner bl"></span><span class="vf-corner br"></span>
+    <span class="stampline" id="stampPreview"></span>
+    <span class="uploadline" id="uploadLine">Menyimpan…</span>
+    <div class="flash" id="flash"></div>
+    <div class="cam-fallback" id="camFallback">
+      <p>Kamera langsung tidak tersedia di browser ini.<br>Gunakan kamera bawaan ponselmu:</p>
+      <button class="btn btn-amber" style="width:auto;padding:13px 26px" id="fallbackBtn">📷 Buka Kamera Ponsel</button>
+      <input type="file" accept="image/*" capture="environment" id="fileInput" hidden>
+    </div>
+  </div>
+  <div class="cam-bottom">
+    <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">🔄</button>
+    <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
+    <button class="roundbtn" id="exitBtn" title="Selesai" aria-label="Selesai">✓</button>
+  </div>
+  <div class="mystrip" id="myStrip"></div>
+</section>
+
+<!-- ============ DONE ============ -->
+<section class="screen" id="doneScreen">
+  <div class="sprocket" aria-hidden="true"></div>
+  <div class="wrap" style="justify-content:center;text-align:center">
+    <p class="eyebrow">Film Habis</p>
+    <p class="bigcount">15/15</p>
+    <div class="canister" style="text-align:left">
+      <h2>Terima kasih! 🤍</h2>
+      <p>Semua jepretanmu sudah tersimpan di album Pasca &amp; Inggrid. Nikmati acaranya — dan jangan lupa foto langsung dengan mempelai ya.</p>
+    </div>
+    <div class="mystrip" id="doneStrip" style="justify-content:center"></div>
+  </div>
+  <div class="sprocket" aria-hidden="true"></div>
+</section>
+
+<!-- ============ HOST ============ -->
+<section class="screen" id="hostScreen">
+  <div class="sprocket" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow">Mode Panitia</p>
+    <h1 class="names" style="font-size:30px">Album <em>Bersama</em></h1>
+
+    <div id="pinBox">
+      <label for="pinInput">PIN Panitia</label>
+      <input type="password" id="pinInput" inputmode="numeric" placeholder="••••">
+      <div class="stack">
+        <button class="btn btn-amber" id="pinBtn">Masuk</button>
+        <button class="btn btn-ghost" id="backBtn1">← Kembali</button>
+      </div>
+      <p class="err" id="pinErr">PIN salah.</p>
+    </div>
+
+    <div id="dashBox" style="display:none">
+      <div class="stats">
+        <div class="stat"><b id="stGuests">–</b><span>Tamu</span></div>
+        <div class="stat"><b id="stPhotos">–</b><span>Foto</span></div>
+        <div class="stat"><b id="stCap">450</b><span>Kapasitas</span></div>
+      </div>
+
+      <div class="qrbox">
+        <span class="cap">Scan untuk memotret</span>
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="stack">
+        <button class="btn btn-amber" id="driveBtn" disabled>📂 Buka Folder Google Drive</button>
+        <button class="btn btn-ghost" id="reloadGalBtn">Muat Galeri Terbaru</button>
+        <button class="btn btn-ghost" id="backBtn2">← Kembali</button>
+      </div>
+      <p class="note" id="galNote"></p>
+
+      <div class="gal" id="gallery"></div>
+    </div>
+  </div>
+  <div class="sprocket" aria-hidden="true"></div>
+</section>
+
+<script>
+/* =====================  PENGATURAN  ===================== */
+const CONFIG = {
+  coupleNames : "Pasca & Inggrid",   // ganti sesuai nama mempelai
+  weddingDate : "2026-08-27",        // dipakai untuk stempel tanggal di foto
+  shotsPerGuest : 15,                // jatah foto per tamu
+  maxGuests   : 450,                 // batas jumlah tamu
+  hostPin     : "1508",              // PIN mode panitia — GANTI sebelum dibagikan!
+  // URL hasil deploy Apps Script (lihat instruksi setup) — WAJIB diisi sebelum dipakai.
+  gasUrl      : "https://script.google.com/macros/s/AKfycbz30lY8aV5HIrgqU6G5uNlYisEHZ-sBD7nXViwxacJCd1R66RgHlWYAC69tHVtCFxy7/exec"
+};
+/* ======================================================== */
+
+const $ = id => document.getElementById(id);
+const screens = ["welcomeScreen","camScreen","doneScreen","hostScreen"];
+function show(id){ screens.forEach(s=>$(s).classList.toggle("on", s===id)); }
+
+// isi lubang film strip
+document.querySelectorAll(".sprocket").forEach(sp=>{ for(let i=0;i<12;i++) sp.appendChild(document.createElement("i")); });
+
+// stempel tanggal gaya kamera film: 27 8 '26
+function stampText(){
+  const d = new Date(CONFIG.weddingDate + "T00:00:00");
+  return `${d.getDate()} ${d.getMonth()+1} '${String(d.getFullYear()).slice(-2)}`;
+}
+$("stampPreview").textContent = stampText();
+
+/* ---------- state tamu (disimpan per perangkat) ---------- */
+let me = null; // {id, name, count}
+const LS_PROFILE = "kenangan-guest-profile";
+const LS_SHOTS_PREFIX = "kenangan-shots:";
+
+function loadMe(){
+  try{ const raw = localStorage.getItem(LS_PROFILE); me = raw ? JSON.parse(raw) : null; }
+  catch(e){ me = null; }
+}
+function saveMe(){ try{ localStorage.setItem(LS_PROFILE, JSON.stringify(me)); }catch(e){} }
+
+function shotsKey(){ return LS_SHOTS_PREFIX + me.id; }
+function loadShots(){ try{ return JSON.parse(localStorage.getItem(shotsKey()) || "[]"); }catch(e){ return []; } }
+function addShotLocal(dataURL){
+  try{
+    const arr = loadShots(); arr.push(dataURL);
+    localStorage.setItem(shotsKey(), JSON.stringify(arr));
+  }catch(e){ /* localStorage penuh — thumbnail lokal cukup best-effort */ }
+}
+
+/* ---------- panggilan ke Apps Script (album bersama) ---------- */
+async function gasPost(payload){
+  const res = await fetch(CONFIG.gasUrl, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" }, // hindari CORS preflight
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+async function gasGet(params){
+  const res = await fetch(CONFIG.gasUrl + "?" + new URLSearchParams(params).toString());
+  return res.json();
+}
+
+/* ---------- mulai ---------- */
+$("startBtn").addEventListener("click", async ()=>{
+  const btn = $("startBtn"); btn.disabled = true; btn.textContent = "Menyiapkan film…";
+  const err = $("welcomeErr"); err.style.display="none";
+  try{
+    loadMe();
+    if(!me){
+      const id = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+      const name = $("guestName").value.trim() || "Tamu";
+      const result = await gasPost({ action:"register", guestId:id, guestName:name });
+      if(!result || !result.ok){
+        err.textContent = (result && result.error === "full")
+          ? "Maaf, kapasitas " + CONFIG.maxGuests + " tamu sudah penuh 🙏"
+          : "Gagal terhubung ke server. Periksa koneksi internet.";
+        err.style.display="block"; btn.disabled=false; btn.textContent="📸 Mulai Memotret"; return;
+      }
+      me = { id, name, count: 0 };
+      saveMe();
+    } else {
+      // sinkron ulang jumlah jepretan dari server, kalau-kalau sempat gagal tersimpan lokal
+      try{
+        const d = await gasGet({ action:"mycount", guestId: me.id });
+        if(d && d.ok) me.count = Math.max(me.count, d.count);
+        saveMe();
+      }catch(e){}
+    }
+    if(me.count >= CONFIG.shotsPerGuest){ showDone(); }
+    else{ await openCamera(); }
+  }catch(e){
+    err.textContent = "Gagal menyiapkan. Periksa koneksi internet lalu coba lagi."; err.style.display="block";
+  }
+  btn.disabled=false; btn.textContent="📸 Mulai Memotret";
+});
+
+/* ---------- kamera ---------- */
+let stream = null, facing = "environment";
+
+async function openCamera(){
+  show("camScreen");
+  updateCounter();
+  renderMyStrip($("myStrip"));
+  await startStream();
+}
+async function startStream(){
+  stopStream();
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode: facing, width:{ideal:1920} }, audio:false });
+    $("video").srcObject = stream;
+    $("camFallback").style.display = "none";
+    $("viewfinder").classList.toggle("mirror", facing === "user");
+  }catch(e){
+    $("camFallback").style.display = "flex";
+  }
+}
+function stopStream(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; } }
+
+$("flipBtn").addEventListener("click", ()=>{ facing = facing==="environment" ? "user" : "environment"; startStream(); });
+$("exitBtn").addEventListener("click", ()=>{ stopStream(); me.count >= CONFIG.shotsPerGuest ? showDone() : show("welcomeScreen"); });
+$("fallbackBtn").addEventListener("click", ()=> $("fileInput").click());
+
+function updateCounter(){
+  const left = CONFIG.shotsPerGuest - me.count;
+  $("shotsLeft").textContent = Math.max(0, left);
+  $("shutterBtn").disabled = left <= 0;
+}
+
+// kompres + stempel tanggal ke foto
+function processImage(source, w, h, mirrored){
+  const MAX = 1280;
+  let cw = w, ch = h;
+  if(Math.max(w,h) > MAX){ const s = MAX/Math.max(w,h); cw = Math.round(w*s); ch = Math.round(h*s); }
+  const c = document.createElement("canvas"); c.width = cw; c.height = ch;
+  const ctx = c.getContext("2d");
+  if(mirrored){ ctx.translate(cw,0); ctx.scale(-1,1); }
+  ctx.drawImage(source, 0, 0, cw, ch);
+  if(mirrored){ ctx.setTransform(1,0,0,1,0,0); }
+  // stempel tanggal oranye khas kamera film
+  const fs = Math.round(cw * 0.032);
+  ctx.font = "700 " + fs + "px 'Space Mono', monospace";
+  ctx.fillStyle = "#F0862E";
+  ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = fs*0.4;
+  ctx.textAlign = "right";
+  ctx.fillText(stampText(), cw - fs, ch - fs);
+  return c.toDataURL("image/jpeg", 0.72);
+}
+
+async function savePhoto(dataURL){
+  $("uploadLine").classList.add("show");
+  try{
+    const result = await gasPost({ action:"photo", guestId: me.id, guestName: me.name, photo: dataURL });
+    if(!result || !result.ok){
+      if(result && typeof result.count === "number"){ me.count = result.count; saveMe(); }
+      throw new Error((result && result.error) || "failed");
+    }
+    me.count = result.count;
+    saveMe();
+    addShotLocal(dataURL);
+    addThumb($("myStrip"), dataURL);
+    updateCounter();
+    if(me.count >= CONFIG.shotsPerGuest){ setTimeout(()=>{ stopStream(); showDone(); }, 700); }
+  } finally {
+    $("uploadLine").classList.remove("show");
+  }
+}
+
+$("shutterBtn").addEventListener("click", async ()=>{
+  if(me.count >= CONFIG.shotsPerGuest) return;
+  const v = $("video");
+  if(!stream || !v.videoWidth){ $("fileInput").click(); return; }
+  $("flash").classList.add("go"); setTimeout(()=> $("flash").classList.remove("go"), 60);
+  $("shutterBtn").disabled = true;
+  try{
+    const dataURL = processImage(v, v.videoWidth, v.videoHeight, facing==="user");
+    await savePhoto(dataURL);
+  }catch(e){ alert("Foto gagal tersimpan. Periksa koneksi internet lalu coba lagi."); }
+  updateCounter();
+});
+
+$("fileInput").addEventListener("change", async (ev)=>{
+  const f = ev.target.files && ev.target.files[0]; ev.target.value = "";
+  if(!f || me.count >= CONFIG.shotsPerGuest) return;
+  const img = new Image();
+  img.onload = async ()=>{
+    try{ await savePhoto(processImage(img, img.naturalWidth, img.naturalHeight, false)); }
+    catch(e){ alert("Foto gagal tersimpan. Periksa koneksi internet lalu coba lagi."); }
+  };
+  img.src = URL.createObjectURL(f);
+});
+
+function addThumb(strip, url){ const im = document.createElement("img"); im.src = url; strip.appendChild(im); }
+function renderMyStrip(strip){
+  strip.innerHTML = "";
+  loadShots().forEach(url => addThumb(strip, url));
+}
+function showDone(){ show("doneScreen"); renderMyStrip($("doneStrip")); }
+
+/* ---------- mode panitia ---------- */
+let driveFolderUrl = "";
+$("hostLink").addEventListener("click", ()=>{ show("hostScreen"); $("pinBox").style.display="block"; $("dashBox").style.display="none"; });
+$("backBtn1").addEventListener("click", ()=> show("welcomeScreen"));
+$("backBtn2").addEventListener("click", ()=> show("welcomeScreen"));
+$("pinBtn").addEventListener("click", async ()=>{
+  if($("pinInput").value === CONFIG.hostPin){
+    $("pinErr").style.display="none"; $("pinInput").value="";
+    $("pinBox").style.display="none"; $("dashBox").style.display="block";
+    if(!$("qrcode").hasChildNodes()){
+      new QRCode($("qrcode"), { text: location.href, width: 190, height: 190, colorDark:"#191512", colorLight:"#F6F0E3" });
+    }
+    await refreshDash();
+  } else { $("pinErr").style.display="block"; }
+});
+
+async function refreshDash(){
+  $("stCap").textContent = CONFIG.maxGuests;
+  $("galNote").textContent = "Memuat…";
+  try{
+    const d = await gasGet({ action:"stats" });
+    if(d && d.ok){
+      $("stGuests").textContent = d.guests;
+      $("stPhotos").textContent = d.photos;
+      driveFolderUrl = d.folderUrl || "";
+      $("driveBtn").disabled = !driveFolderUrl;
+    }
+  }catch(e){ $("galNote").textContent = "Gagal terhubung ke server."; }
+  await renderGallery();
+}
+$("reloadGalBtn").addEventListener("click", refreshDash);
+$("driveBtn").addEventListener("click", ()=>{ if(driveFolderUrl) window.open(driveFolderUrl, "_blank"); });
+
+async function renderGallery(){
+  const g = $("gallery"); g.innerHTML = "";
+  try{
+    const d = await gasGet({ action:"gallery", limit:"60" });
+    const items = (d && d.ok) ? d.items : [];
+    items.forEach(it=>{ const im=document.createElement("img"); im.loading="lazy"; im.src=it.url; g.appendChild(im); });
+    $("galNote").textContent = items.length
+      ? "Menampilkan " + items.length + " foto terbaru. Klik \"Buka Folder Google Drive\" untuk lihat/unduh semua foto."
+      : "Belum ada foto.";
+  }catch(e){ $("galNote").textContent = "Gagal memuat galeri."; }
+}
+
+/* ---------- init ---------- */
+(()=>{
+  loadMe();
+  if(me){
+    $("guestName").value = me.name === "Tamu" ? "" : me.name;
+    const left = CONFIG.shotsPerGuest - me.count;
+    $("capNote").textContent = left > 0
+      ? "Rol film kamu masih tersisa " + left + " jepretan — lanjutkan kapan saja."
+      : "Rol film kamu sudah habis. Terima kasih sudah ikut mengabadikan! 🤍";
+    if(left <= 0) $("startBtn").textContent = "Lihat Jepretanku";
+  }
+})();
+</script>
+</body>
+</html>
