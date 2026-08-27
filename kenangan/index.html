@@ -60,7 +60,7 @@
     font-size:9px;letter-spacing:.2em;color:var(--film-black);background:var(--amber);
     padding:3px 40px;font-weight:700;
   }
-  .canister h2{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:8px}
+  .canister h2{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:8px;padding-right:78px}
   .canister p{color:var(--paper-dim);font-size:12.5px}
   .rules{margin-top:14px;display:grid;gap:8px}
   .rules div{display:flex;gap:10px;align-items:baseline;font-size:12.5px}
@@ -419,7 +419,10 @@ async function startStream(){
   stopStream();
   try{
     stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode: facing, width:{ideal:1920} }, audio:false });
-    $("video").srcObject = stream;
+    const v = $("video");
+    v.srcObject = stream;
+    // beberapa browser Android tidak auto-play ulang setelah srcObject diganti — paksa play().
+    v.play().catch(()=>{});
     $("camFallback").style.display = "none";
     $("viewfinder").classList.toggle("mirror", facing === "user");
   }catch(e){
@@ -427,6 +430,15 @@ async function startStream(){
   }
 }
 function stopStream(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; } }
+
+// Sebagian HP Android membekukan gambar kamera belakang (hitam) sampai tab
+// sempat disembunyikan lalu ditampilkan lagi. Trigger ulang stream otomatis
+// saat tab kembali aktif supaya user tidak perlu keluar-masuk app manual.
+document.addEventListener("visibilitychange", ()=>{
+  if(!document.hidden && stream && $("camScreen").classList.contains("on")){
+    startStream();
+  }
+});
 
 $("flipBtn").addEventListener("click", ()=>{ facing = facing==="environment" ? "user" : "environment"; startStream(); });
 $("exitBtn").addEventListener("click", ()=>{ stopStream(); me.count >= CONFIG.shotsPerGuest ? showDone() : show("welcomeScreen"); });
@@ -486,12 +498,14 @@ function showReview(dataURL){
   $("reviewPreview").classList.add("show");
   $("camBottomNormal").style.display = "none";
   $("camBottomReview").style.display = "flex";
+  $("myStrip").style.display = "none";
 }
 function hideReview(){
   pendingShot = null;
   $("reviewPreview").classList.remove("show");
   $("camBottomNormal").style.display = "flex";
   $("camBottomReview").style.display = "none";
+  $("myStrip").style.display = "";
 }
 
 $("shutterBtn").addEventListener("click", ()=>{
@@ -522,8 +536,33 @@ $("confirmBtn").addEventListener("click", async ()=>{
   hideReview();
 });
 
-function openLightbox(url){ $("lightboxImg").src = url; $("lightbox").classList.add("show"); }
-function closeLightbox(){ $("lightbox").classList.remove("show"); $("lightboxImg").src = ""; }
+// Tombol/gesture "back" HP menutup lightbox dulu, bukan langsung pindah halaman.
+let lightboxHistoryPushed = false;
+
+function openLightbox(url){
+  $("lightboxImg").src = url;
+  if(!$("lightbox").classList.contains("show")){
+    $("lightbox").classList.add("show");
+    history.pushState({ kenanganLightbox: true }, "");
+    lightboxHistoryPushed = true;
+  }
+}
+function closeLightbox(){
+  if(!$("lightbox").classList.contains("show")) return;
+  $("lightbox").classList.remove("show");
+  $("lightboxImg").src = "";
+  if(lightboxHistoryPushed){
+    lightboxHistoryPushed = false;
+    history.back(); // buang entry history yang tadi ditambahkan saat buka lightbox
+  }
+}
+window.addEventListener("popstate", ()=>{
+  if($("lightbox").classList.contains("show")){
+    $("lightbox").classList.remove("show");
+    $("lightboxImg").src = "";
+    lightboxHistoryPushed = false;
+  }
+});
 $("lightboxClose").addEventListener("click", closeLightbox);
 $("lightbox").addEventListener("click", (e)=>{ if(e.target.id === "lightbox") closeLightbox(); });
 
