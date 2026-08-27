@@ -119,12 +119,23 @@
     position:absolute;inset:0;display:none;flex-direction:column;gap:14px;
     align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--paper-dim);font-size:12.5px;
   }
+  .review-preview{position:absolute;inset:0;z-index:6;display:none;background:#000}
+  .review-preview.show{display:block}
+  .review-preview img{width:100%;height:100%;object-fit:cover;display:block}
+  .review-label{
+    position:absolute;top:14px;left:0;right:0;text-align:center;font-size:11px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--paper);text-shadow:0 0 6px rgba(0,0,0,.8);
+  }
   .cam-bottom{padding:16px 18px calc(20px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .cam-bottom.review-actions{justify-content:center;gap:56px}
   .roundbtn{
     width:52px;height:52px;border-radius:50%;border:1px solid var(--line);
     background:var(--film-dark);color:var(--paper);font-size:19px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
+  .roundbtn.retake{width:62px;height:62px;font-size:24px;background:rgba(214,69,51,.15);border-color:rgba(214,69,51,.45);color:#f2a08c}
+  .roundbtn.confirm{width:62px;height:62px;font-size:26px;background:rgba(233,166,60,.18);border-color:rgba(233,166,60,.55);color:var(--amber)}
+  .roundbtn[disabled]{opacity:.45;cursor:not-allowed}
   .shutter{
     width:78px;height:78px;border-radius:50%;border:4px solid var(--paper);
     background:radial-gradient(circle at 34% 30%,#ffcf7d,var(--amber) 60%);
@@ -133,8 +144,19 @@
   .shutter:active{transform:scale(.93)}
   .shutter[disabled]{filter:grayscale(1);opacity:.4}
   .mystrip{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;background:var(--film-black)}
-  .mystrip img{height:52px;border-radius:6px;border:1px solid var(--line)}
+  .mystrip img{height:52px;border-radius:6px;border:1px solid var(--line);cursor:pointer}
   .mystrip:empty{display:none}
+  .gal img{cursor:pointer}
+
+  /* ---------- lightbox (preview foto) ---------- */
+  .lightbox{position:fixed;inset:0;z-index:50;background:rgba(10,9,8,.92);display:none;align-items:center;justify-content:center;padding:28px}
+  .lightbox.show{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+  .lightbox-close{
+    position:absolute;top:18px;right:18px;width:42px;height:42px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(36,31,26,.85);color:var(--paper);
+    font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
 
   /* ---------- done ---------- */
   .bigcount{font-family:'Fraunces',serif;font-size:72px;font-weight:700;color:var(--amber);line-height:1}
@@ -165,8 +187,8 @@
     <p class="sub" id="dateSub">Jakarta · 2026</p>
 
     <div class="canister">
-      <h2>Satu rol film untukmu</h2>
-      <p>Bantu kami mengabadikan hari ini dari sudut pandangmu. Tanpa aplikasi — cukup dari browser ini.</p>
+      <h2>Satu rol film, khusus untukmu</h2>
+      <p>Bantu kami mengabadikan hari ini dari sudut pandangmu.</p>
       <div class="rules">
         <div><b>15</b><span>jepretan per tamu — pakai dengan bijak, tidak bisa dihapus ✨</span></div>
         <div><b>1</b><span>album bersama — semua foto masuk ke galeri mempelai</span></div>
@@ -174,7 +196,7 @@
     </div>
 
     <label for="guestName">Nama kamu (opsional)</label>
-    <input type="text" id="guestName" maxlength="40" placeholder="cth. Ai — meja 12" autocomplete="off">
+    <input type="text" id="guestName" maxlength="40" placeholder="cth. Inggriani" autocomplete="off">
 
     <div class="stack">
       <button class="btn btn-amber" id="startBtn">📸 Mulai Memotret</button>
@@ -190,7 +212,7 @@
 <!-- ============ CAMERA ============ -->
 <section class="screen" id="camScreen">
   <div class="cam-top">
-    <span class="rec"><i></i>FILM • JALAN</span>
+    <span class="rec"><i></i>KAMERA AKTIF</span>
     <span class="counterbox">SISA <span id="shotsLeft">15</span></span>
   </div>
   <div class="viewfinder" id="viewfinder">
@@ -201,15 +223,27 @@
     <span class="uploadline" id="uploadLine">Menyimpan…</span>
     <div class="flash" id="flash"></div>
     <div class="cam-fallback" id="camFallback">
-      <p>Kamera langsung tidak tersedia di browser ini.<br>Gunakan kamera bawaan ponselmu:</p>
-      <button class="btn btn-amber" style="width:auto;padding:13px 26px" id="fallbackBtn">📷 Buka Kamera Ponsel</button>
+      <p>Kamera langsung tidak tersedia di browser ini.<br>Ambil foto pakai kamera atau galeri ponselmu:</p>
+      <button class="btn btn-amber" style="width:auto;padding:13px 26px" id="fallbackBtn">📷 Ambil / Pilih Foto</button>
       <input type="file" accept="image/*" capture="environment" id="fileInput" hidden>
     </div>
+    <div class="review-preview" id="reviewPreview">
+      <img id="reviewImg" alt="Hasil jepretan">
+      <span class="review-label">Pakai foto ini?</span>
+    </div>
   </div>
-  <div class="cam-bottom">
-    <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">🔄</button>
+  <div class="cam-bottom" id="camBottomNormal">
+    <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    </button>
     <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
-    <button class="roundbtn" id="exitBtn" title="Selesai" aria-label="Selesai">✓</button>
+    <button class="roundbtn" id="exitBtn" title="Kembali" aria-label="Kembali">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+  </div>
+  <div class="cam-bottom review-actions" id="camBottomReview" style="display:none">
+    <button class="roundbtn retake" id="retakeBtn" title="Foto ulang" aria-label="Foto ulang">✕</button>
+    <button class="roundbtn confirm" id="confirmBtn" title="Gunakan foto ini" aria-label="Gunakan foto ini">✓</button>
   </div>
   <div class="mystrip" id="myStrip"></div>
 </section>
@@ -270,6 +304,12 @@
   </div>
   <div class="sprocket" aria-hidden="true"></div>
 </section>
+
+<!-- ============ LIGHTBOX (preview foto) ============ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">✕</button>
+  <img id="lightboxImg" alt="Pratinjau foto">
+</div>
 
 <script>
 /* =====================  PENGATURAN  ===================== */
@@ -334,7 +374,7 @@ async function gasGet(params){
 
 /* ---------- mulai ---------- */
 $("startBtn").addEventListener("click", async ()=>{
-  const btn = $("startBtn"); btn.disabled = true; btn.textContent = "Menyiapkan film…";
+  const btn = $("startBtn"); btn.disabled = true; btn.textContent = "Menyiapkan kamera…";
   const err = $("welcomeErr"); err.style.display="none";
   try{
     loadMe();
@@ -437,31 +477,62 @@ async function savePhoto(dataURL){
   }
 }
 
-$("shutterBtn").addEventListener("click", async ()=>{
+/* ---------- konfirmasi hasil jepretan (mirip preview kirim foto WhatsApp) ---------- */
+let pendingShot = null;
+
+function showReview(dataURL){
+  pendingShot = dataURL;
+  $("reviewImg").src = dataURL;
+  $("reviewPreview").classList.add("show");
+  $("camBottomNormal").style.display = "none";
+  $("camBottomReview").style.display = "flex";
+}
+function hideReview(){
+  pendingShot = null;
+  $("reviewPreview").classList.remove("show");
+  $("camBottomNormal").style.display = "flex";
+  $("camBottomReview").style.display = "none";
+}
+
+$("shutterBtn").addEventListener("click", ()=>{
   if(me.count >= CONFIG.shotsPerGuest) return;
   const v = $("video");
   if(!stream || !v.videoWidth){ $("fileInput").click(); return; }
   $("flash").classList.add("go"); setTimeout(()=> $("flash").classList.remove("go"), 60);
-  $("shutterBtn").disabled = true;
-  try{
-    const dataURL = processImage(v, v.videoWidth, v.videoHeight, facing==="user");
-    await savePhoto(dataURL);
-  }catch(e){ alert("Foto gagal tersimpan. Periksa koneksi internet lalu coba lagi."); }
-  updateCounter();
+  showReview(processImage(v, v.videoWidth, v.videoHeight, facing==="user"));
 });
 
-$("fileInput").addEventListener("change", async (ev)=>{
+$("fileInput").addEventListener("change", (ev)=>{
   const f = ev.target.files && ev.target.files[0]; ev.target.value = "";
   if(!f || me.count >= CONFIG.shotsPerGuest) return;
   const img = new Image();
-  img.onload = async ()=>{
-    try{ await savePhoto(processImage(img, img.naturalWidth, img.naturalHeight, false)); }
-    catch(e){ alert("Foto gagal tersimpan. Periksa koneksi internet lalu coba lagi."); }
-  };
+  img.onload = ()=>{ showReview(processImage(img, img.naturalWidth, img.naturalHeight, false)); };
   img.src = URL.createObjectURL(f);
 });
 
-function addThumb(strip, url){ const im = document.createElement("img"); im.src = url; strip.appendChild(im); }
+$("retakeBtn").addEventListener("click", ()=>{ hideReview(); });
+
+$("confirmBtn").addEventListener("click", async ()=>{
+  if(!pendingShot) return;
+  $("confirmBtn").disabled = true; $("retakeBtn").disabled = true;
+  try{
+    await savePhoto(pendingShot);
+  }catch(e){ alert("Foto gagal tersimpan. Periksa koneksi internet lalu coba lagi."); }
+  $("confirmBtn").disabled = false; $("retakeBtn").disabled = false;
+  hideReview();
+});
+
+function openLightbox(url){ $("lightboxImg").src = url; $("lightbox").classList.add("show"); }
+function closeLightbox(){ $("lightbox").classList.remove("show"); $("lightboxImg").src = ""; }
+$("lightboxClose").addEventListener("click", closeLightbox);
+$("lightbox").addEventListener("click", (e)=>{ if(e.target.id === "lightbox") closeLightbox(); });
+
+function addThumb(strip, url){
+  const im = document.createElement("img");
+  im.src = url;
+  im.addEventListener("click", ()=> openLightbox(url));
+  strip.appendChild(im);
+}
 function renderMyStrip(strip){
   strip.innerHTML = "";
   loadShots().forEach(url => addThumb(strip, url));
@@ -506,7 +577,11 @@ async function renderGallery(){
   try{
     const d = await gasGet({ action:"gallery", limit:"60" });
     const items = (d && d.ok) ? d.items : [];
-    items.forEach(it=>{ const im=document.createElement("img"); im.loading="lazy"; im.src=it.url; g.appendChild(im); });
+    items.forEach(it=>{
+      const im=document.createElement("img"); im.loading="lazy"; im.src=it.url;
+      im.addEventListener("click", ()=> openLightbox(it.url));
+      g.appendChild(im);
+    });
     $("galNote").textContent = items.length
       ? "Menampilkan " + items.length + " foto terbaru. Klik \"Buka Folder Google Drive\" untuk lihat/unduh semua foto."
       : "Belum ada foto.";
