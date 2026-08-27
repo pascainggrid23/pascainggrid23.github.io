@@ -103,7 +103,7 @@
     position:relative;flex:1;min-height:0;background:#0a0908;overflow:hidden;
     display:flex;align-items:center;justify-content:center;
   }
-  .viewfinder video{width:100%;height:100%;object-fit:cover}
+  .viewfinder video{width:100%;height:100%;object-fit:contain}
   .viewfinder.mirror video{transform:scaleX(-1)}
   .vf-corner{position:absolute;width:26px;height:26px;border:2px solid rgba(246,240,227,.75);pointer-events:none}
   .vf-corner.tl{top:16px;left:16px;border-right:0;border-bottom:0}
@@ -121,7 +121,7 @@
   }
   .review-preview{position:absolute;inset:0;z-index:6;display:none;background:#000}
   .review-preview.show{display:block}
-  .review-preview img{width:100%;height:100%;object-fit:cover;display:block}
+  .review-preview img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
   .review-label{
     position:absolute;top:14px;left:0;right:0;text-align:center;font-size:11px;
     letter-spacing:.18em;text-transform:uppercase;color:var(--paper);text-shadow:0 0 6px rgba(0,0,0,.8);
@@ -418,7 +418,8 @@ async function openCamera(){
 async function startStream(){
   stopStream();
   try{
-    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode: facing, width:{ideal:1920} }, audio:false });
+    // rasio 4:3 = rasio foto default kamera bawaan HP (beda dari 16:9 yang biasa dipakai untuk video)
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode: facing, width:{ideal:1920}, aspectRatio:{ideal:4/3} }, audio:false });
     const v = $("video");
     v.srcObject = stream;
     // beberapa browser Android tidak auto-play ulang setelah srcObject diganti — paksa play().
@@ -450,7 +451,9 @@ function updateCounter(){
   $("shutterBtn").disabled = left <= 0;
 }
 
-// kompres + stempel tanggal ke foto
+// kompres + stempel tanggal ke foto — seluruh frame disimpan apa adanya (tidak
+// dipotong), karena viewfinder sekarang menampilkan frame utuh (object-fit:contain)
+// jadi yang terlihat saat membidik = persis yang tersimpan.
 function processImage(source, w, h, mirrored){
   const MAX = 1280;
   let cw = w, ch = h;
