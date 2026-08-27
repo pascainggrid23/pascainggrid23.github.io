@@ -126,7 +126,7 @@
     position:absolute;top:14px;left:0;right:0;text-align:center;font-size:11px;
     letter-spacing:.18em;text-transform:uppercase;color:var(--paper);text-shadow:0 0 6px rgba(0,0,0,.8);
   }
-  .cam-bottom{padding:16px 18px calc(20px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .cam-bottom{padding:16px 18px calc(20px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:14px}
   .cam-bottom.review-actions{justify-content:center;gap:56px}
   .roundbtn{
     width:52px;height:52px;border-radius:50%;border:1px solid var(--line);
@@ -146,6 +146,10 @@
   .mystrip{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;background:var(--film-black)}
   .mystrip img{height:52px;border-radius:6px;border:1px solid var(--line);cursor:pointer}
   .mystrip:empty{display:none}
+  /* strip thumbnail di sisi kiri tombol shutter, di dalam cam-bottom */
+  .mystrip-inline{flex:1;min-width:0;padding:0;background:transparent}
+  .mystrip-inline img{height:44px;flex-shrink:0}
+  #myStrip.mystrip-inline:empty{display:flex}
   .gal img{cursor:pointer}
 
   /* ---------- lightbox (preview foto) ---------- */
@@ -233,19 +237,16 @@
     </div>
   </div>
   <div class="cam-bottom" id="camBottomNormal">
+    <div class="mystrip mystrip-inline" id="myStrip"></div>
+    <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
     <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-    </button>
-    <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
-    <button class="roundbtn" id="exitBtn" title="Kembali" aria-label="Kembali">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     </button>
   </div>
   <div class="cam-bottom review-actions" id="camBottomReview" style="display:none">
     <button class="roundbtn retake" id="retakeBtn" title="Foto ulang" aria-label="Foto ulang">✕</button>
     <button class="roundbtn confirm" id="confirmBtn" title="Gunakan foto ini" aria-label="Gunakan foto ini">✓</button>
   </div>
-  <div class="mystrip" id="myStrip"></div>
 </section>
 
 <!-- ============ DONE ============ -->
@@ -409,11 +410,28 @@ $("startBtn").addEventListener("click", async ()=>{
 /* ---------- kamera ---------- */
 let stream = null, facing = "environment";
 
+// Tidak ada lagi tombol "kembali" di layar kamera — tombol/gesture back HP
+// yang dipakai untuk keluar dari kamera (pola history sama seperti lightbox).
+let cameraHistoryPushed = false;
+
 async function openCamera(){
   show("camScreen");
   updateCounter();
   renderMyStrip($("myStrip"));
+  if(!cameraHistoryPushed){
+    history.pushState({ kenanganCamera: true }, "");
+    cameraHistoryPushed = true;
+  }
   await startStream();
+}
+function leaveCamera(){
+  if(cameraHistoryPushed){ history.back(); } // memicu popstate -> exitCameraScreen()
+  else { exitCameraScreen(); }
+}
+function exitCameraScreen(){
+  cameraHistoryPushed = false;
+  stopStream();
+  me.count >= CONFIG.shotsPerGuest ? showDone() : show("welcomeScreen");
 }
 async function startStream(){
   stopStream();
@@ -442,7 +460,6 @@ document.addEventListener("visibilitychange", ()=>{
 });
 
 $("flipBtn").addEventListener("click", ()=>{ facing = facing==="environment" ? "user" : "environment"; startStream(); });
-$("exitBtn").addEventListener("click", ()=>{ stopStream(); me.count >= CONFIG.shotsPerGuest ? showDone() : show("welcomeScreen"); });
 $("fallbackBtn").addEventListener("click", ()=> $("fileInput").click());
 
 function updateCounter(){
@@ -486,7 +503,7 @@ async function savePhoto(dataURL){
     addShotLocal(dataURL);
     addThumb($("myStrip"), dataURL);
     updateCounter();
-    if(me.count >= CONFIG.shotsPerGuest){ setTimeout(()=>{ stopStream(); showDone(); }, 700); }
+    if(me.count >= CONFIG.shotsPerGuest){ setTimeout(leaveCamera, 700); }
   } finally {
     $("uploadLine").classList.remove("show");
   }
@@ -564,6 +581,10 @@ window.addEventListener("popstate", ()=>{
     $("lightbox").classList.remove("show");
     $("lightboxImg").src = "";
     lightboxHistoryPushed = false;
+    return;
+  }
+  if($("camScreen").classList.contains("on")){
+    exitCameraScreen();
   }
 });
 $("lightboxClose").addEventListener("click", closeLightbox);
