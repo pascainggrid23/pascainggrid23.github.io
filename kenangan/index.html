@@ -146,10 +146,20 @@
   .mystrip{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;background:var(--film-black)}
   .mystrip img{height:52px;border-radius:6px;border:1px solid var(--line);cursor:pointer}
   .mystrip:empty{display:none}
-  /* strip thumbnail di sisi kiri tombol shutter, di dalam cam-bottom */
+  /* strip thumbnail di sisi kiri tombol shutter, di dalam cam-bottom.
+     .mystrip-wrap & .cam-bottom-side sama-sama flex:1 supaya shutter tetap
+     persis di tengah, apa pun isi/panjang strip-nya. */
+  .mystrip-wrap{flex:1;min-width:0;position:relative;display:flex;align-items:center}
+  .cam-bottom-side{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end}
   .mystrip-inline{flex:1;min-width:0;padding:0;background:transparent}
   .mystrip-inline img{height:44px;flex-shrink:0}
   #myStrip.mystrip-inline:empty{display:flex}
+  /* gradasi penanda "masih bisa di-scroll" di tepi strip, cuma muncul kalau relevan */
+  .mystrip-fade{position:absolute;top:0;bottom:0;width:26px;pointer-events:none;opacity:0;transition:opacity .2s}
+  .mystrip-fade-l{left:0;background:linear-gradient(to right,#000,transparent)}
+  .mystrip-fade-r{right:0;background:linear-gradient(to left,#000,transparent)}
+  .mystrip-wrap.has-fade-l .mystrip-fade-l{opacity:1}
+  .mystrip-wrap.has-fade-r .mystrip-fade-r{opacity:1}
   .gal img{cursor:pointer}
 
   /* ---------- lightbox (preview foto) ---------- */
@@ -237,11 +247,17 @@
     </div>
   </div>
   <div class="cam-bottom" id="camBottomNormal">
-    <div class="mystrip mystrip-inline" id="myStrip"></div>
+    <div class="mystrip-wrap" id="myStripWrap">
+      <div class="mystrip mystrip-inline" id="myStrip"></div>
+      <div class="mystrip-fade mystrip-fade-l" aria-hidden="true"></div>
+      <div class="mystrip-fade mystrip-fade-r" aria-hidden="true"></div>
+    </div>
     <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
-    <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-    </button>
+    <div class="cam-bottom-side">
+      <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      </button>
+    </div>
   </div>
   <div class="cam-bottom review-actions" id="camBottomReview" style="display:none">
     <button class="roundbtn retake" id="retakeBtn" title="Foto ulang" aria-label="Foto ulang">✕</button>
@@ -511,6 +527,7 @@ async function savePhoto(dataURL){
 
 /* ---------- konfirmasi hasil jepretan (mirip preview kirim foto WhatsApp) ---------- */
 let pendingShot = null;
+let reviewHistoryPushed = false;
 
 function showReview(dataURL){
   pendingShot = dataURL;
@@ -518,14 +535,22 @@ function showReview(dataURL){
   $("reviewPreview").classList.add("show");
   $("camBottomNormal").style.display = "none";
   $("camBottomReview").style.display = "flex";
-  $("myStrip").style.display = "none";
+  history.pushState({ kenanganReview: true }, "");
+  reviewHistoryPushed = true;
 }
-function hideReview(){
+// Dipanggil user (tap ✕/✓) — biarkan popstate (lewat closeReviewUI) yang benar-benar
+// menutup UI-nya, supaya tombol back HP & tombol di layar selalu lewat jalur yang sama.
+function cancelReview(){
+  if(!$("reviewPreview").classList.contains("show")) return;
+  if(reviewHistoryPushed){ history.back(); }
+  else { closeReviewUI(); }
+}
+function closeReviewUI(){
   pendingShot = null;
+  reviewHistoryPushed = false;
   $("reviewPreview").classList.remove("show");
   $("camBottomNormal").style.display = "flex";
   $("camBottomReview").style.display = "none";
-  $("myStrip").style.display = "";
 }
 
 $("shutterBtn").addEventListener("click", ()=>{
@@ -544,7 +569,7 @@ $("fileInput").addEventListener("change", (ev)=>{
   img.src = URL.createObjectURL(f);
 });
 
-$("retakeBtn").addEventListener("click", ()=>{ hideReview(); });
+$("retakeBtn").addEventListener("click", cancelReview);
 
 $("confirmBtn").addEventListener("click", async ()=>{
   if(!pendingShot) return;
@@ -553,10 +578,11 @@ $("confirmBtn").addEventListener("click", async ()=>{
     await savePhoto(pendingShot);
   }catch(e){ alert("Foto gagal tersimpan. Periksa koneksi internet lalu coba lagi."); }
   $("confirmBtn").disabled = false; $("retakeBtn").disabled = false;
-  hideReview();
+  cancelReview();
 });
 
-// Tombol/gesture "back" HP menutup lightbox dulu, bukan langsung pindah halaman.
+// Tombol/gesture "back" HP menutup lapisan yang lagi terbuka dulu (lightbox foto,
+// lalu preview konfirmasi jepretan), baru terakhir keluar dari layar kamera.
 let lightboxHistoryPushed = false;
 
 function openLightbox(url){
@@ -567,20 +593,25 @@ function openLightbox(url){
     lightboxHistoryPushed = true;
   }
 }
+// Sama seperti cancelReview() — biarkan popstate yang menutup UI-nya, jangan
+// diubah dulu di sini, supaya tombol X dan tombol back HP konsisten satu jalur.
 function closeLightbox(){
   if(!$("lightbox").classList.contains("show")) return;
+  if(lightboxHistoryPushed){ history.back(); }
+  else { closeLightboxUI(); }
+}
+function closeLightboxUI(){
   $("lightbox").classList.remove("show");
   $("lightboxImg").src = "";
-  if(lightboxHistoryPushed){
-    lightboxHistoryPushed = false;
-    history.back(); // buang entry history yang tadi ditambahkan saat buka lightbox
-  }
+  lightboxHistoryPushed = false;
 }
 window.addEventListener("popstate", ()=>{
   if($("lightbox").classList.contains("show")){
-    $("lightbox").classList.remove("show");
-    $("lightboxImg").src = "";
-    lightboxHistoryPushed = false;
+    closeLightboxUI();
+    return;
+  }
+  if($("reviewPreview").classList.contains("show")){
+    closeReviewUI();
     return;
   }
   if($("camScreen").classList.contains("on")){
@@ -590,11 +621,24 @@ window.addEventListener("popstate", ()=>{
 $("lightboxClose").addEventListener("click", closeLightbox);
 $("lightbox").addEventListener("click", (e)=>{ if(e.target.id === "lightbox") closeLightbox(); });
 
+// Gradasi penanda di tepi strip kamera — cuma tampil kalau memang masih ada
+// konten yang belum kelihatan ke arah itu (dicek dari posisi scroll asli).
+function updateStripFade(){
+  const el = $("myStrip"), wrap = $("myStripWrap");
+  if(!el || !wrap) return;
+  const maxScroll = el.scrollWidth - el.clientWidth;
+  wrap.classList.toggle("has-fade-l", el.scrollLeft > 4);
+  wrap.classList.toggle("has-fade-r", maxScroll > 4 && el.scrollLeft < maxScroll - 4);
+}
+$("myStrip").addEventListener("scroll", updateStripFade);
+window.addEventListener("resize", updateStripFade);
+
 function addThumb(strip, url){
   const im = document.createElement("img");
   im.src = url;
   im.addEventListener("click", ()=> openLightbox(url));
   strip.appendChild(im);
+  if(strip === $("myStrip")) updateStripFade();
 }
 function renderMyStrip(strip){
   strip.innerHTML = "";
