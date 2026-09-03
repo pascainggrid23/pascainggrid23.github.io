@@ -295,7 +295,7 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 100%;
+            max-width: 450px;
             margin: 0 auto;
             background: transparent;
             box-shadow: 0 0 40px rgba(198, 160, 217, 0.3);
@@ -1284,50 +1284,50 @@
             }
         }
 
-        /* Responsive untuk tablet */
-        @media (min-width: 768px) {
+        /* Responsive untuk tablet — dinonaktifkan agar tampilan tetap mobile di layar lebar */
+        /* @media (min-width: 768px) {
             .container {
-                /*max-width: 768px;*/
+                max-width: 768px;
             }
-            
+
             .cover-names {
                 font-size: 64px;
             }
-            
+
             .hero h1 {
                 font-size: 42px;
             }
-            
+
             .couple-names {
                 font-size: 56px;
             }
-            
+
             .section-title {
                 font-size: 40px;
             }
-            
+
             .countdown {
                 grid-template-columns: repeat(4, 1fr);
             }
-            
+
             .countdown-number {
                 font-size: 60px;
             }
-            
+
             .gift-cards {
                 flex-direction: row;
             }
-			
+
 			.countdown-container {
 				margin-left: 60px;
 				margin-right: 60px;
 			}
-			
+
 			.hero-names {
                 font-size: 48px;
             }
-        }
-		
+        } */
+
 		@media (max-width: 768px) {
             .slide-title {
                 font-size: 2em;
@@ -1340,26 +1340,26 @@
             }
         }
 
-        /* Responsive untuk desktop */
-        @media (min-width: 1024px) {
+        /* Responsive untuk desktop — dinonaktifkan agar tampilan tetap mobile di layar lebar */
+        /* @media (min-width: 1024px) {
             .container {
-                /*max-width: 1080px;*/
+                max-width: 1080px;
             }
-            
+
             section {
                 padding: 80px 60px;
             }
-            
+
             .profiles {
 				justify-content: space-around;
                 flex-direction: row;
                 gap: 20px;
             }
-            
+
             .events {
                 flex-direction: row;
             }
-        }
+        } */
 
 		@media (max-width: 480px) {
             .photo-grid {
@@ -2425,7 +2425,7 @@
                 if (toName) {
                     const inviteeEl = document.createElement('div');
                     inviteeEl.className = 'invitee-name';
-                    inviteeEl.textContent = toName + ' & Partner';
+                    inviteeEl.innerHTML = escapeHtml(toName) + '<br>&<br>Partner';
                     guestNameEl.insertAdjacentElement('afterend', inviteeEl);
                 } else {
                     guestNameEl.remove();
