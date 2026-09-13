@@ -314,7 +314,7 @@
             <textarea id="guestInput" placeholder="Budi Santoso, 081234567890
 Siti Aminah
 Keluarga Bapak Hartono, 08211122233"></textarea>
-            <div class="format-hint">Nomor WhatsApp boleh diawali 0, 62, atau +62. Kalau nomor tidak diisi, tombol "Kirim WA" akan membuka WhatsApp dan Anda memilih kontaknya sendiri.</div>
+            <div class="format-hint">Nomor WhatsApp boleh diawali 0, 62, atau +62. Kalau nomor tidak diisi, tombol "Kirim WA" akan membuka WhatsApp dan Anda memilih kontaknya sendiri.<br>Nama boleh mengandung gelar dengan koma, contoh: <code>Dr Ani Wijayati, S.H, M.H, 081234567890</code> — hanya bagian terakhir yang berupa angka yang akan dianggap nomor HP.</div>
 
             <button class="btn btn-generate" onclick="generateLinks()">🚀 Generate Link</button>
         </div>
@@ -376,15 +376,28 @@ Keluarga Bapak Hartono, 08211122233"></textarea>
         return `${CONFIG.baseUrl}${path}/?to=${encodeURIComponent(name)}`;
     }
 
+    function looksLikePhone(str) {
+        // Only digits, spaces, +, -, () — and at least 6 digits — counts as a phone number.
+        // Anything else (e.g. "S.H", "M.H") is treated as part of the name, so gelar
+        // separated by commas (e.g. "Dr Ani Wijayati, S.H, M.H") aren't mistaken for a phone.
+        if (!/^[\d+\-\s()]+$/.test(str)) return false;
+        return (str.match(/\d/g) || []).length >= 6;
+    }
+
     function parseGuests(text, defaultType) {
         return text
             .split('\n')
             .map(line => line.trim())
             .filter(Boolean)
             .map(line => {
-                const parts = line.split(',').map(p => p.trim());
-                const name = parts[0];
-                const phone = parts[1] ? normalizePhone(parts[1]) : '';
+                const parts = line.split(',').map(p => p.trim()).filter(Boolean);
+                let phone = '';
+                let nameParts = parts;
+                if (parts.length > 1 && looksLikePhone(parts[parts.length - 1])) {
+                    phone = normalizePhone(parts[parts.length - 1]);
+                    nameParts = parts.slice(0, -1);
+                }
+                const name = nameParts.join(', ');
                 return { name, phone, type: defaultType };
             })
             .filter(g => g.name);
