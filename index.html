@@ -2419,10 +2419,23 @@
         // Invitee name from ?to= URL parameter (runs after SPA redirect restoration)
         (function() {
             const params = new URLSearchParams(window.location.search);
-            const toName = capitalizeName(params.get('to') || '');
+            const rawTo = (params.get('to') || '').trim();
+            // If the invitee param already names a couple (e.g. "pasca&inggrid",
+            // "pasca dan inggrid", "pasca and inggrid"), show both names as-is
+            // instead of appending "& Partner".
+            const coupleMatch = rawTo.match(/^(.+?)\s*&\s*(.+)$/) ||
+                rawTo.match(/^(.+?)\s+(?:dan|and)\s+(.+)$/i);
+            const toName = capitalizeName(rawTo);
             const guestNameEl = document.querySelector('.guest-name');
             if (guestNameEl) {
-                if (toName) {
+                if (coupleMatch) {
+                    const name1 = capitalizeName(coupleMatch[1]);
+                    const name2 = capitalizeName(coupleMatch[2]);
+                    const inviteeEl = document.createElement('div');
+                    inviteeEl.className = 'invitee-name';
+                    inviteeEl.innerHTML = escapeHtml(name1) + '<br>&<br>' + escapeHtml(name2);
+                    guestNameEl.insertAdjacentElement('afterend', inviteeEl);
+                } else if (toName) {
                     const inviteeEl = document.createElement('div');
                     inviteeEl.className = 'invitee-name';
                     inviteeEl.innerHTML = escapeHtml(toName) + '<br>&<br>Partner';
