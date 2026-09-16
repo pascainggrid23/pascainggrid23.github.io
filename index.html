@@ -342,6 +342,64 @@
             }
         }
 
+        /* Floating Section Nav */
+        .floating-nav {
+            position: fixed;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 6px;
+            border-radius: 999px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            z-index: 8000;
+        }
+
+        .floating-nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: #764ba2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .floating-nav-item svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .floating-nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .floating-nav-item:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 380px) {
+            .floating-nav-item {
+                width: 38px;
+                height: 38px;
+            }
+            .floating-nav-item svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
         .music-icon {
             font-size: 28px;
             color: white;
@@ -577,26 +635,27 @@
         .profiles {
             display: flex;
             flex-direction: column;
-			justify-content: space-around;
-            gap: 50px;
-            margin-top: 40px;
+            align-items: center;
+            gap: 0;
+            margin-top: 35px;
         }
 
         .profile-card {
-			flex: 1;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(198, 160, 217, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
         }
 
         .profile-photo {
-            width: 180px;
-            height: 180px;
+            width: 170px;
+            height: 170px;
             border-radius: 50%;
             background: linear-gradient(135deg, #e6d9f0, #ffd6e0) padding-box,
                         linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
-            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -604,6 +663,12 @@
             color: white;
             border: 2px solid transparent;
             overflow: hidden;
+            box-shadow: 0 20px 40px rgba(74, 44, 115, 0.25);
+            transition: transform 0.4s ease;
+        }
+
+        .profile-card:hover .profile-photo {
+            transform: scale(1.03);
         }
 
         .profile-photo img {
@@ -613,18 +678,32 @@
         }
 
         .profile-name {
-            font-size: 24px;
-            color: #9370db;
-            margin: 15px 0;
-			font-weight: bold;
+            font-family: 'Playfair Display', serif;
+            font-size: 25px;
+            color: #4a2c73;
+            margin: 18px 0 6px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
         .profile-parent {
-            font-size: 16px;
-            color: #888;
-            line-height: 1.6;
-			
-			font-weight: bold;
+            font-size: 13px;
+            color: #8a7ba3;
+            line-height: 1.7;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .profile-divider {
+            font-family: 'Great Vibes', cursive;
+            font-size: 60px;
+            line-height: 1;
+            margin: 6px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* Event Details */
@@ -641,32 +720,66 @@
         }
 
         .event-card {
-            background: linear-gradient(135deg, #faf8fc, #fff5f8);
-            padding: 35px 25px;
-            border-radius: 20px;
-            border: 2px solid #e6d9f0;
+            background: linear-gradient(160deg, #ffffff, #faf5ff);
+            padding: 40px 26px 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(147, 112, 219, 0.18);
+            box-shadow: 0 20px 45px rgba(74, 44, 115, 0.12);
 			flex: 1;
         }
 
+        .icon-badge,
+        .bank-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e6d9f0, #ffd6e0) padding-box,
+                        linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+            box-shadow: 0 10px 25px rgba(74, 44, 115, 0.18);
+        }
+
         .event-type {
-            font-size: 26px;
-            color: #9370db;
-            margin-bottom: 20px;
-            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #4a2c73;
+            margin-bottom: 0;
+            font-weight: 700;
+        }
+
+        .event-divider {
+            width: 46px;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 16px auto 22px;
+            border-radius: 2px;
         }
 
         .event-info {
-            font-size: 16px;
-            color: #666;
+            font-size: 15px;
+            color: #5c5470;
             margin: 15px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
         }
 
-        .event-info span {
-            font-size: 22px;
+        .event-info-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(147, 112, 219, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
         .action-buttons {
@@ -696,23 +809,25 @@
         }
 
         .btn-map {
-            background: linear-gradient(135deg, #4285f4, #34a853);
-            box-shadow: 0 5px 20px rgba(66, 133, 244, 0.4);
+            background: transparent;
+            border: 2px solid #9370db;
+            color: #764ba2;
+            box-shadow: none;
         }
-		
+
 		.btn-map:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(66, 133, 244, 0.6);
+            background: rgba(147, 112, 219, 0.08);
         }
 
         .btn-calendar {
-            background: linear-gradient(135deg, #ea4335, #fbbc04);
-            box-shadow: 0 5px 20px rgba(234, 67, 53, 0.4);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 25px rgba(118, 75, 162, 0.35);
         }
-		
+
 		.btn-calendar:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(234, 67, 53, 0.6);
+            box-shadow: 0 12px 30px rgba(118, 75, 162, 0.45);
         }
 
         /* RSVP */
@@ -1073,39 +1188,44 @@
         }
 
         .gift-card {
-            background: white;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(198, 160, 217, 0.2);
+            background: linear-gradient(160deg, #ffffff, #faf5ff);
+            padding: 36px 24px 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(147, 112, 219, 0.18);
+            box-shadow: 0 20px 45px rgba(74, 44, 115, 0.12);
 			flex: 1;
         }
 
-        .bank-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-        }
-
         .gift-card h3 {
-            font-size: 22px;
-            color: #9370db;
-            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            color: #4a2c73;
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
         .account-info {
-            font-size: 15px;
-            color: #666;
+            font-size: 14px;
+            color: #8a7ba3;
             margin: 12px 0;
+            letter-spacing: 0.3px;
+        }
+
+        .account-info strong {
+            color: #4a2c73;
+            font-size: 16px;
         }
 
         .account-number {
-            font-size: 22px;
-            color: #9370db;
+            font-size: 20px;
+            color: #4a2c73;
             font-weight: bold;
+            letter-spacing: 1px;
             margin: 15px 0;
             padding: 12px 30px;
-            background: #f5f0f7;
-            border-radius: 10px;
+            background: #faf5ff;
+            border: 1px dashed rgba(147, 112, 219, 0.4);
+            border-radius: 12px;
             word-break: break-all;
 			justify-content: center;
 			align-items: center;
@@ -1116,7 +1236,7 @@
         .copy-btn {
             margin-top: 15px;
             padding: 12px 30px;
-            background: linear-gradient(135deg, #9370db, #c6a0d9);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 50px;
@@ -1128,11 +1248,12 @@
             gap: 8px;
             width: 100%;
             justify-content: center;
+            box-shadow: 0 10px 25px rgba(118, 75, 162, 0.3);
         }
-		
+
 		.copy-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.4);
+            box-shadow: 0 12px 30px rgba(118, 75, 162, 0.45);
         }
 
         .copy-btn:active {
@@ -1247,9 +1368,10 @@
         }
 
         .signature {
-            font-size: 36px;
-            font-family: 'Brush Script MT', cursive;
+            font-size: clamp(24px, 6.5vw, 34px);
+            font-family: 'Great Vibes', cursive;
             margin-top: 5px;
+            line-height: 1.5;
             background: linear-gradient(135deg, #7c4dab, #4a2c73);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -1961,6 +2083,25 @@
         </svg>
     </div>
 
+    <!-- Floating Section Nav -->
+    <nav class="floating-nav" id="floatingNav">
+        <button class="floating-nav-item active" data-target="topAnchor" aria-label="Home" onclick="scrollToNavSection('topAnchor', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        </button>
+        <button class="floating-nav-item" data-target="loveStorySection" aria-label="Love Story" onclick="scrollToNavSection('loveStorySection', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <button class="floating-nav-item" data-target="momentsSection" aria-label="Our Moments" onclick="scrollToNavSection('momentsSection', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
+        <button class="floating-nav-item" data-target="giftSection" aria-label="Wedding Gift" onclick="scrollToNavSection('giftSection', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        </button>
+        <button class="floating-nav-item" data-target="wishesSection" aria-label="Wishes & Prayers" onclick="scrollToNavSection('wishesSection', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+    </nav>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
@@ -1968,6 +2109,7 @@
     <audio id="bgMusic"></audio>
 
     <div class="container" id="mainContainer">
+        <div id="topAnchor"></div>
         <!-- Halaman Pembuka
 		<div class="all-background">
 			<div class="opening">
@@ -2071,7 +2213,7 @@
 		</div>
 
         <!-- Love Story -->
-		<div class="all-background">
+		<div class="all-background" id="loveStorySection">
 			<section class="hero">
 				<h2 class="section-title"><span class="section-title-text">Our Love Story</span></h2>
 				<div class="story-content" style="text-align: justify;">
@@ -2098,21 +2240,19 @@
 						<div class="profile-photo"><img src="Images/groom.jpg?v=1" alt="Pascario Tri Yudanto" loading="lazy" decoding="async"></div>
 						<div class="profile-name">Pascario Tri Yudanto</div>
 						<div class="profile-parent">
-							The Son of:<br>
-							Mr. Sri Hutomo<br>
-							&<br>
-							Mrs. Yuni Triwati
+							The Beloved Son of<br>
+							Mr. Sri Hutomo &amp; Mrs. Yuni Triwati
 						</div>
 					</div>
-					
+
+					<div class="profile-divider">&amp;</div>
+
 					<div class="profile-card">
 						<div class="profile-photo"><img src="Images/bride.jpg?v=1" alt="Inggriani Priscilia" loading="lazy" decoding="async"></div>
 						<div class="profile-name">Inggriani Priscilia</div>
 						<div class="profile-parent">
-							The Daughter of:<br>
-							Mr. Rudy Sendjaja<br>
-							&<br>
-							Mrs. Sarah Thomas
+							The Beloved Daughter of<br>
+							Mr. Rudy Sendjaja &amp; Mrs. Sarah Thomas
 						</div>
 					</div>
 				</div>
@@ -2130,13 +2270,15 @@
 					</div>					
 				<div class="events">
 					<div class="event-card">
+						<div class="icon-badge">💍</div>
 						<div class="event-type">Holy Matrimony</div>
+						<div class="event-divider"></div>
 						<div class="event-info">
-							<span>🗓️</span>
+							<span class="event-info-icon">🗓️</span>
 							<div>03 October 2026<br>13:00 WIB</div>
 						</div>
 						<div class="event-info">
-							<span>📍</span>
+							<span class="event-info-icon">📍</span>
 							<div>GKI Gunung Sahari<br>Jakarta Pusat</div>
 						</div>
 						<div class="action-buttons">
@@ -2148,15 +2290,17 @@
 							</button>
 						</div>
 					</div>
-					
+
 					<div class="event-card" id="familyDinnerCard">
+						<div class="icon-badge">🥂</div>
 						<div class="event-type">Family Dinner</div>
+						<div class="event-divider"></div>
 						<div class="event-info">
-							<span>🗓️</span>
+							<span class="event-info-icon">🗓️</span>
 							<div>03 October 2026<br>18:00 - 21:00 WIB</div>
 						</div>
 						<div class="event-info">
-							<span>📍</span>
+							<span class="event-info-icon">📍</span>
 							<div>Aroem Mahakam Resto, Cafe, and Ballroom<br>Jakarta Selatan</div>
 						</div>
 						<div class="action-buttons">
@@ -2200,7 +2344,7 @@
 		</div>
 
         <!-- Gallery -->
-		<div class="all-background">
+		<div class="all-background" id="momentsSection">
 			<section class="hero">
 				<h2 class="section-title"><span class="section-title-text">Our Moments</span></h2>
 					<div class="closing-message">
@@ -2213,7 +2357,7 @@
 		</div>
 
         <!-- Wedding Gift -->
-		<div class="all-background">
+		<div class="all-background" id="giftSection">
 			<section class="hero">
 				<h2 class="section-title"><span class="section-title-text">Wedding Gift</span></h2>
 				<div class="story-content">
@@ -2449,6 +2593,8 @@
             if (!toName) {
                 const wishesSection = document.getElementById('wishesSection');
                 if (wishesSection) wishesSection.remove();
+                const wishesNavItem = document.querySelector('.floating-nav-item[data-target="wishesSection"]');
+                if (wishesNavItem) wishesNavItem.remove();
             }
         })();
 
@@ -2457,6 +2603,7 @@
         const musicIcon = document.getElementById('musicIcon');
         const coverOverlay = document.getElementById('coverOverlay');
         const mainContainer = document.getElementById('mainContainer');
+        const floatingNav = document.getElementById('floatingNav');
         let isPlaying = false;
         let invitationOpened = false;
         let playlist = [];
@@ -2679,7 +2826,6 @@
             const showCopied = () => {
                 button.classList.add('copied');
                 button.innerHTML = '<span>✓</span> Copied Successfully!';
-                showToast('✅ Number copied successfully!');
                 setTimeout(() => {
                     button.classList.remove('copied');
                     button.innerHTML = 'Copy account number';
@@ -3036,6 +3182,43 @@
         document.querySelectorAll('.hero, .closing').forEach(section => {
             observer.observe(section);
         });
+
+        /* Floating Nav — smooth scroll + active icon tracking */
+        const floatingNavItems = document.querySelectorAll('.floating-nav-item');
+        const navSections = Array.from(floatingNavItems)
+            .map(item => document.getElementById(item.dataset.target))
+            .filter(Boolean);
+
+        function scrollToNavSection(targetId, btn) {
+            const target = document.getElementById(targetId);
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            floatingNavItems.forEach(item => item.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                floatingNavItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.target === entry.target.id);
+                });
+            });
+        }, { threshold: 0.3, rootMargin: '-30% 0px -50% 0px' });
+
+        navSections.forEach(section => navObserver.observe(section));
+
+        // Floating nav only appears once past the first (slider) page — hidden while it's in view
+        const heroSliderEl = document.querySelector('.slider-container');
+        if (heroSliderEl) {
+            const heroSliderObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!invitationOpened) return;
+                    floatingNav.style.display = entry.isIntersecting ? 'none' : 'flex';
+                });
+            }, { threshold: 0.15 });
+            heroSliderObserver.observe(heroSliderEl);
+        }
 
        /* Wish & Prayer — Google Spreadsheet backend via Apps Script */
 		const GAS_URL = "https://script.google.com/macros/s/AKfycby3jSuK89mLkUqFAnpePpoD8srUfl527vuYrCSsh2gxjrc3sEkSltNUZmZRlHCpiDCY/exec";
