@@ -312,8 +312,8 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 60px;
-            height: 60px;
+            width: clamp(36px, calc(14vw - 8.8px), 50px);
+            height: clamp(36px, calc(14vw - 8.8px), 50px);
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
             display: none;
@@ -346,8 +346,8 @@
         .floating-nav {
             position: fixed;
             left: 50%;
-            bottom: 20px;
             transform: translateX(-50%);
+            bottom: 20px;
             display: none;
             align-items: center;
             gap: 4px;
@@ -364,8 +364,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
+            width: clamp(30px, calc(14vw - 14.8px), 44px);
+            height: clamp(30px, calc(14vw - 14.8px), 44px);
             border: none;
             border-radius: 50%;
             background: transparent;
@@ -376,8 +376,8 @@
         }
 
         .floating-nav-item svg {
-            width: 20px;
-            height: 20px;
+            width: clamp(14px, calc(6vw - 5.2px), 20px);
+            height: clamp(14px, calc(6vw - 5.2px), 20px);
         }
 
         .floating-nav-item.active {
@@ -389,19 +389,9 @@
             transform: scale(1.1);
         }
 
-        @media (max-width: 380px) {
-            .floating-nav-item {
-                width: 38px;
-                height: 38px;
-            }
-            .floating-nav-item svg {
-                width: 18px;
-                height: 18px;
-            }
-        }
-
         .music-icon {
-            font-size: 28px;
+            width: clamp(18px, calc(6vw - 1.2px), 24px);
+            height: clamp(18px, calc(6vw - 1.2px), 24px);
             color: white;
         }
 
@@ -565,40 +555,60 @@
         /* Countdown Section */
         /* Countdown */
         .countdown {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
             justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin:0 0 30px 0;
+            align-items: stretch;
+            flex-wrap: nowrap;
+            gap: 10px;
+            margin: 10px 0 30px 0;
         }
 
         .countdown-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px;
-            border-radius: 20px;
-            min-width: 100px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            background: linear-gradient(160deg, #ffffff, #faf5ff);
+            padding: 16px 6px 14px;
+            border-radius: 16px;
+            min-width: 0;
+            flex: 1;
+            border: 1px solid rgba(147, 112, 219, 0.18);
+            box-shadow: 0 10px 25px rgba(74, 44, 115, 0.1);
             transition: transform 0.3s ease;
         }
 
+        .countdown-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
         .countdown-item:hover {
-            transform: translateY(-10px) scale(1.05);
+            transform: translateY(-4px);
         }
 
         .countdown-number {
-            font-size: 42px;
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
             font-weight: 700;
-            color: white;
+            line-height: 1;
             display: block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .countdown-label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 10.5px;
+            color: #8a7ba3;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 5px;
+            letter-spacing: 1.2px;
+            margin-top: 6px;
+            font-weight: 600;
         }
 
         .congratulations-message {
@@ -688,7 +698,7 @@
 
         .profile-parent {
             font-size: 13px;
-            color: #8a7ba3;
+            color: #6b5b8a;
             line-height: 1.7;
             font-weight: 600;
             text-transform: uppercase;
@@ -847,21 +857,21 @@
         .rsvp-btn {
             margin-top: 10px;
             padding: 16px 50px;
-            background: linear-gradient(135deg, #25d366, #128c7e);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 50px;
             font-size: 18px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            box-shadow: 0 10px 25px rgba(118, 75, 162, 0.35);
             display: inline-flex;
             align-items: center;
         }
-		
+
 		.rsvp-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
+            box-shadow: 0 12px 30px rgba(118, 75, 162, 0.5);
         }
 
         .rsvp-btn:active {
@@ -1282,7 +1292,7 @@
 
         /* Closing */
         .closing {
-            min-height: 40vh;
+            min-height: calc(100vh - 40px);
             position: relative;
             background-image: linear-gradient(135deg, rgba(224, 208, 245, 0.82), rgba(198, 176, 230, 0.82)),
                         url('Images/hero-bg.jpg');
@@ -1494,7 +1504,11 @@
 
 			.countdown-item {
 				text-align: center;
-				padding: 5px;
+				padding: 14px 4px 12px;
+			}
+
+			.countdown-number {
+				font-size: 26px;
 			}
 			
 			.dear {
@@ -2103,7 +2117,7 @@
 
     <!-- Music Control -->
     <div class="music-control" id="musicControl" onclick="toggleMusic()">
-		<svg class="music-icon" id="musicIcon"  width="30" height="30" viewBox="0 0 24 24" fill="white" >
+		<svg class="music-icon" id="musicIcon"  width="24" height="24" viewBox="0 0 24 24" fill="white" >
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
         </svg>
     </div>
@@ -3199,15 +3213,16 @@
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
+                const section = entry.target.querySelector('.hero, .closing');
+                if (section) section.classList.toggle('visible', entry.isIntersecting);
             });
         }, observerOptions);
 
-        document.querySelectorAll('.hero, .closing').forEach(section => {
-            observer.observe(section);
+        // Observe the untransformed wrapper (not .hero/.closing itself) — those get
+        // translateY()'d by the visible/hidden animation, which would otherwise shift
+        // their own geometry right at the intersection edge and cause an infinite toggle loop.
+        document.querySelectorAll('.all-background').forEach(wrapper => {
+            if (wrapper.querySelector('.hero, .closing')) observer.observe(wrapper);
         });
 
         /* Floating Nav — smooth scroll + active icon tracking */
@@ -3231,7 +3246,7 @@
                     item.classList.toggle('active', item.dataset.target === entry.target.id);
                 });
             });
-        }, { threshold: 0.3, rootMargin: '-30% 0px -50% 0px' });
+        }, { threshold: 0, rootMargin: '-45% 0px -45% 0px' });
 
         navSections.forEach(section => navObserver.observe(section));
 
