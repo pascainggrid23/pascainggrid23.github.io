@@ -59,6 +59,10 @@
             overflow-x: hidden;
             overscroll-behavior-y: none;
             position: relative;
+            /* Stops the last section's bottom margin from collapsing through body — without
+               this, that margin escapes body entirely and the plain <html> background (no image,
+               a flat pale color) shows through as a stray blank strip below the last card. */
+            padding-bottom: 1px;
 			font-family: 'Baskervville', serif;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -82,16 +86,12 @@
             width: 100%;
             height: 100%;
             z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             transition: opacity 0.8s ease, visibility 0.8s ease;
-            padding: 20px;
-			background-image: url('Images/cover-bg.jpg');
-			background-size: cover;
+			background-image: linear-gradient(to bottom, rgba(20, 12, 30, 0.2) 0%, rgba(20, 12, 30, 0.1) 40%, rgba(20, 12, 30, 0.85) 100%),
+						url('Images/cover-photo.jpg');
+			background-size: cover, 160%;
 			background-repeat: no-repeat;
-			background-position: center;
+			background-position: center, center 22%;
         }
 
         .cover-overlay.hidden {
@@ -99,25 +99,17 @@
             visibility: hidden;
             pointer-events: none;
         }
-		
-		.cover-container {
-            position: relative;
-            background-image: linear-gradient(135deg, rgba(224, 208, 245, 0.82), rgba(198, 176, 230, 0.82)),
-                        url('Images/hero-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 50px 40px;
-            max-width: 500px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-            animation: fadeInScale 1s ease;
-            z-index: 2;
-        }
 
         .cover-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 50px 30px 40px;
+            box-sizing: border-box;
             text-align: center;
-            color: #D0F0C0;
             animation: fadeInUp 1.5s ease;
         }
 
@@ -132,98 +124,83 @@
             }
         }
 
-        .cover-ornament {
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .cover-ornament-img {
-            width: 100px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
         .cover-title {
-            font-size: 20px;
+            font-size: 15px;
             font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
-            color: #333;
-            margin-bottom: 20px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+            margin-bottom: 14px;
         }
 
         .cover-names {
-            font-size: 48px;
+            font-size: 44px;
             font-family: 'Great Vibes', cursive;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 10px -20px;
+            color: #ffffff;
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
             white-space: nowrap;
         }
 
         .cover-date {
-            font-size: 24px;
+            font-size: 17px;
             font-weight: 600;
             letter-spacing: 3px;
-            color: #333;
-            margin: 20px 0;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+            margin-bottom: 14px;
+        }
+
+        .guest-box {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 28px;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.08) 65%, rgba(0, 0, 0, 0) 100%);
+            border-radius: 18px;
         }
 
         .cover-to {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 300;
-            color: #666;
-            margin-top: 30px;
-            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2px;
         }
 
         .guest-name {
-            font-size: 22px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .guest-welcome {
-            font-size: 16px;
-            font-weight: 300;
-            color: #666;
-            margin-bottom: 12px;
-            font-style: italic;
+            font-family: 'Great Vibes', cursive;
+            font-size: 28px;
+            color: #f0d998;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+            letter-spacing: 1px;
         }
 
         .name-disclaimer {
             font-size: 11px;
             font-weight: 300;
-            color: #555;
             font-style: italic;
-            margin-bottom: 30px;
-            opacity: 0.85;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            margin-top: 6px;
+            opacity: 0.9;
         }
 
         .open-invitation-btn {
-            padding: 18px 50px;
+            padding: 16px 46px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
             transition: all 0.3s;
             align-items: center;
-			margin-top: 20px;
+			margin-top: 18px;
         }
-		
+
 		.open-invitation-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(198, 160, 217, 0.6);
@@ -233,61 +210,37 @@
             transform: scale(0.95);
         }
 
-        /* Layar pendek: kecilkan spasi/isi supaya tombol Open Invitation selalu muat tanpa scroll, tapi kartunya tetap terlihat penuh */
-        @media (max-height: 800px) {
-            .cover-container {
-                min-height: 70vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                padding: 30px 24px;
-            }
-
-            .cover-ornament {
-                margin-bottom: 10px;
-            }
-
-            .cover-ornament-img {
-                width: 85px;
-            }
-
-            .cover-title {
-                margin-bottom: 10px;
+        /* Layar pendek: kecilkan spasi/isi supaya tombol Open Invitation selalu muat tanpa scroll */
+        @media (max-height: 700px) {
+            .cover-content {
+                padding: 30px 24px 24px;
             }
 
             .cover-names {
                 font-size: 34px;
-                margin: 10px 0;
             }
 
             .cover-date {
-                font-size: 18px;
-                margin: 10px 0;
+                font-size: 15px;
+                margin-bottom: 8px;
             }
 
-            .cover-to {
-                margin-top: 14px;
-                margin-bottom: 6px;
+            .guest-box {
+                padding: 10px 20px;
             }
 
             .guest-name {
-                font-size: 18px;
-                margin-bottom: 6px;
-            }
-
-            .guest-welcome {
-                font-size: 14px;
-                margin-bottom: 8px;
+                font-size: 22px;
             }
 
             .name-disclaimer {
                 font-size: 10px;
-                margin-bottom: 16px;
+                margin-top: 3px;
             }
 
             .open-invitation-btn {
                 padding: 12px 36px;
-                font-size: 17px;
+                font-size: 16px;
                 margin-top: 10px;
             }
         }
@@ -399,6 +352,15 @@
 		.all-background{
 			content-visibility: auto;
 			contain-intrinsic-size: auto 600px;
+		}
+
+		/* The closing section's height is content-dependent (message length varies) and it's the
+		   last thing on the page, right where the floating nav/music buttons float — an inaccurate
+		   contain-intrinsic-size estimate here would throw off the page's scrollable height and risk
+		   the signature sitting under those buttons, so skip the size guess and always lay it out for real. */
+		.all-background:has(.closing) {
+			content-visibility: visible;
+			contain-intrinsic-size: auto;
 		}
 		
         .hero p {
@@ -564,51 +526,33 @@
         }
 
         .countdown-item {
-            position: relative;
-            background: linear-gradient(160deg, #ffffff, #faf5ff);
-            padding: 16px 6px 14px;
-            border-radius: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 8px;
+            border-radius: 20px;
             min-width: 0;
             flex: 1;
-            border: 1px solid rgba(147, 112, 219, 0.18);
-            box-shadow: 0 10px 25px rgba(74, 44, 115, 0.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
             transition: transform 0.3s ease;
         }
 
-        .countdown-item::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            border-radius: 16px 16px 0 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
         .countdown-item:hover {
-            transform: translateY(-4px);
+            transform: translateY(-10px) scale(1.05);
         }
 
         .countdown-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
+            font-size: clamp(22px, 7.5vw, 32px);
             font-weight: 700;
-            line-height: 1;
+            color: white;
             display: block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .countdown-label {
-            font-size: 10.5px;
-            color: #8a7ba3;
+            font-size: clamp(7.5px, 2.4vw, 11px);
+            color: rgba(255, 255, 255, 0.9);
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: clamp(0.2px, 0.3vw, 1.2px);
+            white-space: nowrap;
             margin-top: 6px;
-            font-weight: 600;
         }
 
         .congratulations-message {
@@ -1299,7 +1243,7 @@
             background-size: 100% 100%;
             background-position: center;
             background-repeat: no-repeat;
-            padding: 50px 24px;
+            padding: 50px 24px 70px;
             margin: 20px;
             border-radius: 20px;
             overflow: hidden;
@@ -1504,13 +1448,9 @@
 
 			.countdown-item {
 				text-align: center;
-				padding: 14px 4px 12px;
+				padding: 14px 3px 12px;
 			}
 
-			.countdown-number {
-				font-size: 26px;
-			}
-			
 			.dear {
                 font-size: 30px;
             }
@@ -1683,21 +1623,6 @@
         @keyframes bounceArrow {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(4px); }
-        }
-
-        /* Invitee name - shown below Mr./Mrs. when ?to= param is set */
-        /* Antique metallic gold, matching the ornament/border gold accents used across the invitation */
-        .invitee-name {
-            font-family: 'Great Vibes', cursive;
-            font-size: 30px;
-            background: linear-gradient(135deg, #c6a35c 0%, #9c7a30 55%, #71501c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 6px 0 15px;
-            animation: fadeInUp 1.5s ease 0.5s both;
-            letter-spacing: 1px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         /* Explore button click burst animation */
@@ -2097,21 +2022,21 @@
     <!-- Cover Overlay - Tidak bisa skip -->
     <div class="cover-overlay" id="coverOverlay">
         <div class="cover-content">
-			<div class ="cover-container">
-				<div class="cover-ornament">
-					<img src="Images/ornament.png?v=3" alt="" class="cover-ornament-img">
-				</div>
+			<div class="cover-top">
 				<div class="cover-title">The Wedding of</div>
 				<div class="cover-names">Pascario & Inggriani</div>
-				<div class="cover-date">03 • 10 • 2026</div>
-				<div class="cover-to">Dear</div>
-				<div class="guest-name">Mr./Mrs./Ladies and Gentlemen</div>
-                <div class="guest-welcome">We cordially invite you to our wedding</div>
-                <div class="name-disclaimer">We apologize for any error<br>in the spelling of your name or title</div>
 			</div>
-            <button class="open-invitation-btn" onclick="openInvitation()">
-                <span>✉️</span> Open Invitation
-            </button>
+			<div class="cover-bottom">
+				<div class="cover-date">03 • 10 • 2026</div>
+				<div class="guest-box">
+					<div class="cover-to">Dear</div>
+					<div class="guest-name"></div>
+					<div class="name-disclaimer">We apologize for any error<br>in the spelling of your name or title</div>
+				</div>
+				<button class="open-invitation-btn" onclick="openInvitation()">
+					<span>✉️</span> Open Invitation
+				</button>
+			</div>
         </div>
     </div>
 
@@ -2494,11 +2419,13 @@
 			<section class="closing">
 				<h2 class="section-title"><span class="section-title-text">Thank You</span></h2>
 				<div class="closing-message">
-					We are deeply grateful for your prayers, love, and support as we step into this new chapter of our lives.<br><br>
+					We are deeply grateful for your prayers, love, and support as we step into this new chapter of our lives. Every step of this beautiful journey has been made more meaningful because of the people who surround us with love — and that includes you.<br><br>
 
-					We look forward to your presence on our wonderful day! <br><br>
-					
-			
+					Your presence has always meant the world to us, and we would be truly honored to have you stand beside us as we begin our forever.<br><br>
+
+					We look forward to celebrating this joyous occasion together, sharing laughter, prayers, and unforgettable memories on our wonderful day!<br><br>
+
+					Thank you for being part of our story — today, and always.
 				</div>
 				<div class="signature">With warm regards,<br>Pascario & Inggriani</div>
 			</section>
@@ -2616,15 +2543,9 @@
                 if (coupleMatch) {
                     const name1 = capitalizeName(coupleMatch[1]);
                     const name2 = capitalizeName(coupleMatch[2]);
-                    const inviteeEl = document.createElement('div');
-                    inviteeEl.className = 'invitee-name';
-                    inviteeEl.innerHTML = escapeHtml(name1) + '<br>&<br>' + escapeHtml(name2);
-                    guestNameEl.insertAdjacentElement('afterend', inviteeEl);
+                    guestNameEl.innerHTML = escapeHtml(name1) + '<br>&<br>' + escapeHtml(name2);
                 } else if (toName) {
-                    const inviteeEl = document.createElement('div');
-                    inviteeEl.className = 'invitee-name';
-                    inviteeEl.innerHTML = escapeHtml(toName) + '<br>&<br>Partner';
-                    guestNameEl.insertAdjacentElement('afterend', inviteeEl);
+                    guestNameEl.innerHTML = escapeHtml(toName) + '<br>&<br>Partner';
                 } else {
                     guestNameEl.remove();
                 }
