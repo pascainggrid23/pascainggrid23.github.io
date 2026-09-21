@@ -2674,9 +2674,13 @@
             const coupleMatch = rawTo.match(/^(.+?)\s*&\s*(.+)$/) ||
                 rawTo.match(/^(.+?)\s+(?:dan|and)\s+(.+)$/i);
             const toName = capitalizeName(rawTo);
+            // Undangan untuk keluarga / grup: tampilkan namanya saja, tanpa "& Partner"
+            const isFamilyOrGroup = /(^|[\s.,&])(keluarga|grup|group)($|[\s.,&])/i.test(rawTo);
             const guestNameEl = document.querySelector('.guest-name');
             if (guestNameEl) {
-                if (coupleMatch) {
+                if (isFamilyOrGroup) {
+                    guestNameEl.innerHTML = escapeHtml(toName);
+                } else if (coupleMatch) {
                     const name1 = capitalizeName(coupleMatch[1]);
                     const name2 = capitalizeName(coupleMatch[2]);
                     guestNameEl.innerHTML = escapeHtml(name1) + '<br>&<br>' + escapeHtml(name2);
