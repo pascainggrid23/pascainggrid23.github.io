@@ -1007,6 +1007,10 @@
             align-items: center;
         }
 
+        body.lightbox-open .floating-nav {
+            display: none !important;
+        }
+
         .lightbox.active {
             display: flex;
             animation: lightboxFadeIn 0.35s ease forwards;
@@ -2537,7 +2541,7 @@
 				</div>
 				<div class="signature">With warm regards,<br>Pascario & Inggriani</div>
 				<div class="dev-footer">
-					built for Inggrid, debugged by Inggrid, approved by Inggrid<br>
+					built for Inggrid, approved by Inggrid<br>
 					<span class="dev-footer-bug">Found a bug? Report to Inggrid
 						<a href="https://www.instagram.com/inggridpris/" target="_blank" rel="noopener noreferrer" class="dev-footer-ig" aria-label="Instagram Inggrid">
 							here
@@ -3023,6 +3027,7 @@
 		let lightboxOpenViaHistory = false;
 
         function performLightboxClose() {
+            document.body.classList.remove('lightbox-open');
             resetZoom();
             lightboxContent.classList.add('closing');
             lightbox.classList.add('closing');
@@ -3040,6 +3045,7 @@
             lightboxContent.classList.remove('closing');
             lightbox.classList.remove('closing');
             lightbox.classList.add('active');
+            document.body.classList.add('lightbox-open');
             updateCounter();
             document.body.style.overflow = 'hidden';
             history.pushState({ lightboxOpen: true }, '');
@@ -3435,6 +3441,9 @@
 		    if (page === currentWishPage) return;
 		    currentWishPage = page;
 		    paintWishesPage();
+		    // kembali ke komen paling atas setelah ganti halaman
+		    const wishesTop = document.getElementById('wishesHeader') || document.getElementById('wishesList');
+		    if (wishesTop) wishesTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 		
 		async function loadWishes() {
