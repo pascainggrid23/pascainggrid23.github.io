@@ -51,7 +51,7 @@
         }
 
         body {
-			background-image: url('Images/body-bg.jpg?v=2');
+			background-image: url('Images/body-bg.jpg?v=3');
             background-size: contain;
             background-position: center;
             /*background: linear-gradient(to bottom, #E0B0FF, #B0E0E6);
@@ -945,10 +945,16 @@
             aspect-ratio: 1;
         }
 
-        /* Foto terakhir (IMGL0734): selalu full-width landscape */
-        .photo-item:last-child {
+        /* Foto 12: full-width landscape */
+        .photo-item:nth-child(12) {
             grid-column: span 6;
             aspect-ratio: 2 / 1;
+        }
+
+        /* Foto terakhir: full-width landscape 3:2 (tanpa crop) */
+        .photo-item:last-child {
+            grid-column: span 6;
+            aspect-ratio: 3 / 2;
         }
 
         /* Foto 5: full-width landscape; foto 6-7: sebaris berdua */
@@ -2316,7 +2322,7 @@
 					<div class="profile-card">
 						<div class="profile-photo" data-slideshow="4500">
 							<img class="active" src="Images/groom.jpg?v=1" alt="Pascario Tri Yudanto" loading="eager" decoding="async" style="--s:3.2; --ox:52%; --oy:50%; --fy:50%; object-position:50% 5%;">
-							<img src="Images/groom-2.jpg?v=3" alt="Pascario Tri Yudanto" loading="eager" decoding="async" style="--s:2.1; --ox:39.6%; --oy:33%; --fx:54%; --fy:28%; object-position:50% 0%;">
+							<img src="Images/groom-2.jpg?v=4" alt="Pascario Tri Yudanto" loading="eager" decoding="async" style="--s:2.1; --ox:39.6%; --oy:33%; --fx:54%; --fy:28%; object-position:50% 0%;">
 						</div>
 						<div class="profile-name">Pascario Tri Yudanto</div>
 						<div class="profile-parent">
@@ -2330,7 +2336,7 @@
 					<div class="profile-card">
 						<div class="profile-photo" data-slideshow="4500" data-delay="2250">
 							<img class="active" src="Images/bride.jpg?v=1" alt="Inggriani Priscilia" loading="eager" decoding="async" style="--s:3.6; --ox:50%; --oy:49%; --fy:38%; object-position:50% 0%;">
-							<img src="Images/bride-2.jpg" alt="Inggriani Priscilia" loading="eager" decoding="async" style="--s:1.2; --ox:56.6%; --oy:30%; --fy:25%; object-position:50% 30%;">
+							<img src="Images/bride-2.jpg?v=2" alt="Inggriani Priscilia" loading="eager" decoding="async" style="--s:1.6; --ox:45.8%; --oy:29%; --fx:50%; --fy:28%; object-position:50% 0%;">
 						</div>
 						<div class="profile-name">Inggriani Priscilia</div>
 						<div class="profile-parent">
@@ -3002,8 +3008,9 @@
             '/Images/gallery-08.jpg',
             '/Images/gallery-09.jpg',
             '/Images/gallery-10.jpg',
-            '/Images/gallery-11.jpg',
-            '/Images/gallery-12.jpg'
+            '/Images/gallery-11.jpg?v=2',
+            '/Images/gallery-12.jpg?v=2',
+            '/Images/gallery-13.jpg'
         ];
 
 		let currentIndex = 0;
