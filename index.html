@@ -3267,7 +3267,7 @@
 		    list.innerHTML = pageItems.map((w, i) => {
 		        const isAttending = w.kehadiran === 'Hadir';
 		        const tagClass = isAttending ? 'attending' : 'not-attending';
-		        const tagText  = isAttending ? 'Attending' : 'Not Attending';
+		        const tagText  = isAttending ? 'Attending' : 'Can\'t Attend';
 		        const timeStr  = w.waktu ? timeAgo(w.waktu) : '';
 		        return `<div class="wish-card" style="animation-delay:${i * 0.05}s">
 		            <div class="wish-card-name">${escapeHtml(capitalizeName(w.nama))}<span class="wish-tag ${tagClass}">${tagText}</span></div>
