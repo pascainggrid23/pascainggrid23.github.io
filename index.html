@@ -106,7 +106,12 @@
             align-items: center;
             width: 100%;
             max-width: 450px;
-            height: 100%;
+            /* Tinggi kotak mengikuti tinggi foto (foto = 160% lebar, rasio 2:3 => tinggi 2.4x lebar),
+               tapi tidak melebihi tinggi layar. Layar lebih tinggi dari foto => tidak ada ruang hitam. */
+            height: auto;
+            aspect-ratio: 1 / 2.4;
+            max-height: 100%;
+            align-self: center;
             padding: 50px 30px 40px;
             box-sizing: border-box;
             text-align: center;
