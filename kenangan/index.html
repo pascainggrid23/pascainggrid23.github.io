@@ -105,6 +105,17 @@
     border:1px solid var(--line);border-radius:9px;padding:5px 12px;
     background:rgba(25,21,18,.7);color:var(--amber);font-weight:700;
   }
+  .cam-top-right{display:flex;align-items:center;gap:10px}
+  .topicon{
+    position:relative;width:30px;height:30px;border-radius:50%;flex-shrink:0;
+    border:1px solid var(--line);background:rgba(25,21,18,.7);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .topicon.wm-off{opacity:.5}
+  .topicon.wm-off::after{
+    content:"";position:absolute;left:6px;right:6px;top:50%;height:1.5px;
+    background:currentColor;border-radius:2px;transform:rotate(-45deg);
+  }
   .viewfinder{
     position:relative;flex:1;min-height:0;background:#0a0908;overflow:hidden;
     display:flex;align-items:center;justify-content:center;
@@ -170,7 +181,7 @@
     padding:6px 16px;border-radius:20px;opacity:0;transition:opacity .15s;pointer-events:none;z-index:5;
   }
   .zoom-hud.show{opacity:1}
-  .zoom-presets{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+  .zoom-presets{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
   .zoom-presets:empty{display:none}
   .zoom-presets button{
     width:34px;height:34px;border-radius:50%;border:1px solid rgba(251,243,250,.3);
@@ -186,15 +197,10 @@
   .focus-ring.show{opacity:1;transform:scale(1)}
   /* mode flash: off (polos) / auto (outline + badge "A") / on (isi solid) — flash cuma
      benar-benar menyala sesaat pas jepret, bukan senter nyala terus (lihat captureWithFlash). */
-  .roundbtn.flash-auto{border-color:rgba(189,82,201,.55);color:var(--amber)}
-  .roundbtn.flash-on{background:rgba(189,82,201,.18);border-color:rgba(189,82,201,.55);color:var(--amber)}
+  .roundbtn.flash-auto, .topicon.flash-auto{border-color:rgba(189,82,201,.55);color:var(--amber)}
+  .roundbtn.flash-on, .topicon.flash-on{background:rgba(189,82,201,.18);border-color:rgba(189,82,201,.55);color:var(--amber)}
   .flash-badge{position:absolute;bottom:3px;right:4px;font-size:8px;font-weight:800;line-height:1;font-family:'Space Mono',monospace}
-  /* watermark tanggal dimatikan tamu sendiri — garis diagonal ala ikon "flash off" */
-  .roundbtn.wm-off{opacity:.5}
-  .roundbtn.wm-off::after{
-    content:"";position:absolute;left:9px;right:9px;top:50%;height:2px;
-    background:currentColor;border-radius:2px;transform:rotate(-45deg);
-  }
+  .topicon .flash-badge{bottom:-1px;right:-1px}
   .cam-fallback{
     position:absolute;inset:0;display:none;flex-direction:column;gap:14px;
     align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--paper-dim);font-size:12.5px;
@@ -330,7 +336,16 @@
 <section class="screen" id="camScreen">
   <div class="cam-top">
     <span class="rec"><i></i>KAMERA AKTIF</span>
-    <span class="counterbox">SISA <span id="shotsLeft">15</span></span>
+    <div class="cam-top-right">
+      <button class="topicon" id="watermarkBtn" title="Watermark tanggal: Nyala" aria-label="Watermark tanggal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.57 3H4a1 1 0 0 0-1 1v5.57a2 2 0 0 0 .83 1.43l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z"/><circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="topicon" id="flashBtn" title="Mode flash: Mati" aria-label="Mode flash" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        <span class="flash-badge" id="flashBadge"></span>
+      </button>
+      <span class="counterbox">SISA <span id="shotsLeft">15</span></span>
+    </div>
   </div>
   <div class="viewfinder" id="viewfinder">
     <video id="video" autoplay playsinline muted></video>
@@ -371,13 +386,6 @@
     </div>
     <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
     <div class="cam-bottom-side">
-      <button class="roundbtn" id="watermarkBtn" title="Watermark tanggal: Nyala" aria-label="Watermark tanggal">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.57 3H4a1 1 0 0 0-1 1v5.57a2 2 0 0 0 .83 1.43l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z"/><circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" stroke="none"/></svg>
-      </button>
-      <button class="roundbtn" id="flashBtn" title="Mode flash: Mati" aria-label="Mode flash" style="display:none">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-        <span class="flash-badge" id="flashBadge"></span>
-      </button>
       <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
       </button>
