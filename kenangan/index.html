@@ -462,24 +462,12 @@ async function gasPost(payload){
   });
   return res.json();
 }
-// Sama seperti gasPost, tapi lewat XHR supaya bisa mantau progress upload
-// beneran (fetch tidak punya event progress bawaan) — dipakai khusus buat
-// kirim foto, karena payload base64-nya lumayan besar dan ini yang bikin
-// loading bar isinya benar-benar mengikuti proses upload, bukan animasi kosong.
-function gasPostWithProgress(payload, onProgress){
-  return new Promise((resolve, reject)=>{
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", CONFIG.gasUrl);
-    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
-    xhr.upload.onprogress = (e)=>{ if(e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
-    xhr.onload = ()=>{
-      try{ resolve(JSON.parse(xhr.responseText)); }
-      catch(e){ reject(e); }
-    };
-    xhr.onerror = ()=> reject(new Error("network"));
-    xhr.send(JSON.stringify(payload));
-  });
-}
+// CATATAN PENTING: sempat dicoba pakai XMLHttpRequest + xhr.upload.onprogress
+// supaya loading bar-nya mengikuti progress upload beneran — TERNYATA menempel
+// listener ke xhr.upload memaksa browser mengirim CORS preflight (OPTIONS),
+// dan Apps Script tidak menangani OPTIONS, jadi request-nya ditolak instan
+// (gagal pas progress masih 0%). Makanya kirim foto tetap lewat fetch/gasPost
+// biasa yang terbukti jalan; progress bar-nya disimulasikan di simulateUploadProgress().
 async function gasGet(params){
   const res = await fetch(CONFIG.gasUrl + "?" + new URLSearchParams(params).toString());
   return res.json();
@@ -780,11 +768,10 @@ function processImage(source, w, h, mirrored, cropZoom){
 
 async function savePhoto(dataURL){
   showUploadProgress(0);
+  const stopSim = simulateUploadProgress(dataURL.length);
   try{
-    const result = await gasPostWithProgress(
-      { action:"photo", guestId: me.id, guestName: me.name, photo: dataURL },
-      (frac)=> setUploadProgress(frac)
-    );
+    const result = await gasPost({ action:"photo", guestId: me.id, guestName: me.name, photo: dataURL });
+    stopSim();
     setUploadProgress(1);
     if(!result || !result.ok){
       if(result && typeof result.count === "number"){ me.count = result.count; saveMe(); }
@@ -797,8 +784,26 @@ async function savePhoto(dataURL){
     updateCounter();
     if(me.count >= CONFIG.shotsPerGuest){ setTimeout(leaveCamera, 700); }
   } finally {
+    stopSim();
     hideUploadProgress();
   }
+}
+// Karena upload beneran lewat fetch (lihat catatan di gasPost) tidak punya event
+// progress asli, bar-nya disimulasikan: naik cepat lalu melambat (ease-out) dan
+// dibatasi maksimal 92% selama masih menunggu respons server — begitu server
+// benar-benar menjawab, savePhoto() yang lompat-kan ke 100%. Estimasi durasinya
+// dikira-kira dari ukuran foto (base64) supaya foto besar terasa "lebih lama".
+function simulateUploadProgress(byteLength){
+  const assumedBytesPerSec = 180000; // asumsi kasar upload di lapangan (wifi/4G venue acara)
+  const estSec = Math.min(6, Math.max(0.6, byteLength / assumedBytesPerSec));
+  const tau = estSec * 0.5;
+  const start = performance.now();
+  let raf = requestAnimationFrame(function tick(now){
+    const t = (now - start) / 1000;
+    setUploadProgress(Math.min(0.92, 1 - Math.exp(-t / tau)));
+    raf = requestAnimationFrame(tick);
+  });
+  return ()=> cancelAnimationFrame(raf);
 }
 function showUploadProgress(frac){
   $("uploadLabel").textContent = "Menyimpan…";
