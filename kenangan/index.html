@@ -1018,9 +1018,16 @@ function closeReviewUI(){
 // baik lewat retake maupun setelah konfirmasi (berhasil ataupun gagal).
 function pauseCameraForReview(){
   if(videoTrack) videoTrack.enabled = false;
-  $("video").pause();
+  const v = $("video");
+  v.pause();
+  // sebagian browser HP nge-render <video> kamera lewat lapisan hardware video
+  // decoder sendiri yang kadang nembus urutan tumpukan CSS biasa (z-index) —
+  // disembunyikan eksplisit di sini biar dijamin gak "bocor" kelihatan di
+  // belakang layar preview, gak cuma mengandalkan elemen lain menutupinya.
+  v.style.visibility = "hidden";
 }
 function resumeCameraFromReview(){
+  $("video").style.visibility = "";
   if(!stream) return; // lagi di jalur fallback file-input — gak ada stream buat di-resume
   if(videoTrack) videoTrack.enabled = true;
   $("video").play().catch(()=>{});
