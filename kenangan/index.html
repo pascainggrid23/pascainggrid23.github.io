@@ -118,7 +118,17 @@
   .vf-corner.br{bottom:16px;right:16px;border-left:0;border-top:0}
   .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
   .flash.go{opacity:.9;transition:none}
-  .stampline{position:absolute;right:16px;bottom:16px;color:var(--stamp);font-size:13px;font-weight:700;text-shadow:0 0 6px rgba(0,0,0,.6)}
+  /* preview watermark di viewfinder — samain persis sama badge "pita monogram"
+     yang digambar ke foto asli (lihat drawMonogramWatermark), biar tamu lihat
+     kurang lebih apa yang bakal muncul di hasil jepretannya. */
+  .stampline{
+    position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:7px;
+    background:rgba(36,26,44,.55);border-radius:20px;padding:6px 13px;
+    box-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  .stampline .sl-initials{font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:14px;color:#f2b8ee}
+  .stampline .sl-divider{width:1px;height:13px;background:rgba(255,255,255,.3)}
+  .stampline .sl-date{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:var(--stamp)}
   /* ---------- overlay upload: backdrop gelap + kartu progress di tengah ---------- */
   .upload-overlay{
     position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
@@ -206,13 +216,24 @@
   .roundbtn.retake{width:62px;height:62px;font-size:24px;background:rgba(214,69,51,.15);border-color:rgba(214,69,51,.45);color:#f2a08c}
   .roundbtn.confirm{width:62px;height:62px;font-size:26px;background:rgba(189,82,201,.18);border-color:rgba(189,82,201,.55);color:var(--amber)}
   .roundbtn[disabled]{opacity:.45;cursor:not-allowed}
+  /* shutter modern: ring tipis + isian terpisah dengan celah (ala kamera iOS/
+     Snapchat), bukan lingkaran gradasi solid nempel ke ring seperti sebelumnya. */
   .shutter{
-    width:78px;height:78px;border-radius:50%;border:4px solid var(--paper);
-    background:radial-gradient(circle at 34% 30%,#f0d0f5,var(--amber) 60%);
-    cursor:pointer;flex-shrink:0;box-shadow:0 0 0 6px rgba(189,82,201,.15);
+    position:relative;width:76px;height:76px;border-radius:50%;
+    border:3px solid var(--paper);background:transparent;padding:0;
+    cursor:pointer;flex-shrink:0;transition:transform .15s ease;
+    -webkit-tap-highlight-color:transparent;
   }
-  .shutter:active{transform:scale(.93)}
-  .shutter[disabled]{filter:grayscale(1);opacity:.4}
+  .shutter::before{
+    content:"";position:absolute;inset:6px;border-radius:50%;
+    background:linear-gradient(155deg,#f0d0f5,var(--amber) 65%);
+    box-shadow:0 3px 12px rgba(0,0,0,.35);
+    transition:inset .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s ease;
+  }
+  .shutter:active{transform:scale(.96)}
+  .shutter:active::before{inset:13px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+  .shutter[disabled]{opacity:.4;cursor:not-allowed}
+  .shutter[disabled]::before{background:var(--film-dark);box-shadow:none}
   .mystrip{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;background:var(--film-black)}
   .mystrip img{height:52px;border-radius:6px;border:1px solid var(--line);cursor:pointer}
   .mystrip:empty{display:none}
@@ -235,12 +256,24 @@
   /* ---------- lightbox (preview foto) ---------- */
   .lightbox{position:fixed;inset:0;z-index:50;background:rgba(10,9,8,.92);display:none;align-items:center;justify-content:center;padding:28px}
   .lightbox.show{display:flex}
-  .lightbox img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+  .lightbox-imgwrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+  .lightbox-imgwrap img{
+    max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55);
+    transform-origin:center center;will-change:transform;transition:transform .05s linear;
+  }
   .lightbox-close{
     position:absolute;top:18px;right:18px;width:42px;height:42px;border-radius:50%;
     border:1px solid var(--line);background:rgba(36,31,26,.85);color:var(--paper);
-    font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;
   }
+  .lightbox-nav{
+    position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(36,31,26,.85);color:var(--paper);
+    font-size:26px;line-height:1;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;
+  }
+  .lightbox-nav:disabled{opacity:.3;cursor:not-allowed}
+  .lightbox-prev{left:12px}
+  .lightbox-next{right:12px}
 
   /* ---------- done ---------- */
   .bigcount{font-family:'Fraunces',serif;font-size:72px;font-weight:700;color:var(--amber);line-height:1}
@@ -303,7 +336,11 @@
     <video id="video" autoplay playsinline muted></video>
     <span class="vf-corner tl"></span><span class="vf-corner tr"></span>
     <span class="vf-corner bl"></span><span class="vf-corner br"></span>
-    <span class="stampline" id="stampPreview"></span>
+    <span class="stampline" id="stampPreview">
+      <span class="sl-initials" id="stampPreviewInitials"></span>
+      <span class="sl-divider"></span>
+      <span class="sl-date" id="stampPreviewDate"></span>
+    </span>
     <div class="upload-overlay" id="uploadLine">
       <div class="upload-card">
         <div class="upload-ring" aria-hidden="true"></div>
@@ -412,7 +449,11 @@
 <!-- ============ LIGHTBOX (preview foto) ============ -->
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">✕</button>
-  <img id="lightboxImg" alt="Pratinjau foto">
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Foto sebelumnya">‹</button>
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Foto berikutnya">›</button>
+  <div class="lightbox-imgwrap" id="lightboxImgWrap">
+    <img id="lightboxImg" alt="Pratinjau foto">
+  </div>
 </div>
 
 <script>
@@ -440,7 +481,8 @@ function stampText(){
   const d = new Date(CONFIG.weddingDate + "T00:00:00");
   return `${d.getDate()} ${d.getMonth()+1} '${String(d.getFullYear()).slice(-2)}`;
 }
-$("stampPreview").textContent = stampText();
+$("stampPreviewInitials").textContent = coupleInitials();
+$("stampPreviewDate").textContent = stampText();
 
 // Pilihan watermark tanggal — ini murni preferensi tamu itu sendiri, diatur
 // lewat tombol di layar kamera (bukan pengaturan panitia/server). Default
@@ -732,12 +774,32 @@ function shouldFireFlash(v){
   return measureBrightness(v) < 90; // ambang gelap, mode Auto
 }
 
-// Nyalakan flash sesaat sebelum & selama jepretan (bukan senter terus-terusan),
-// beri jeda dikit biar exposure kamera sempat menyesuaikan ke cahaya baru.
+// HP asli nunggu sinyal hardware "exposure sudah stabil" (AE converged) abis
+// flash nyala, kadang malah lewat pre-flash metering — dua-duanya butuh akses
+// chip kamera level rendah yang gak diekspos ke web. Pendekatan terdekat yang
+// bisa dilakukan dari browser: pantau kecerahan preview berkali-kali begitu
+// torch nyala, dan capture begitu kecerahannya berhenti berubah (exposure
+// kamera sudah "nurun" menyesuaikan cahaya baru) — otomatis nyesuaiin per HP/
+// kondisi cahaya, bukan nebak angka tetap sama rata buat semua orang. Tetap
+// ada batas maksimal biar gak nunggu kelamaan kalau gak pernah kelihatan stabil.
+async function waitForExposureToSettle(v){
+  const minWaitMs = 150, maxWaitMs = 900, sampleEveryMs = 70, stableThreshold = 4;
+  const start = performance.now();
+  await new Promise(r=>setTimeout(r, minWaitMs));
+  let prev = measureBrightness(v);
+  while(performance.now() - start < maxWaitMs){
+    await new Promise(r=>setTimeout(r, sampleEveryMs));
+    const curr = measureBrightness(v);
+    if(Math.abs(curr - prev) < stableThreshold) return; // udah stabil, capture sekarang
+    prev = curr;
+  }
+  // gak pernah stabil dalam batas waktu -> tetap capture, jangan nge-hang
+}
+// Nyalakan flash sesaat sebelum & selama jepretan (bukan senter terus-terusan).
 async function captureWithFlash(v){
   const fire = shouldFireFlash(v);
   if(fire){
-    try{ await videoTrack.applyConstraints({ advanced:[{ torch:true }] }); await new Promise(r=>setTimeout(r,220)); }
+    try{ await videoTrack.applyConstraints({ advanced:[{ torch:true }] }); await waitForExposureToSettle(v); }
     catch(e){}
   }
   $("flash").classList.add("go"); setTimeout(()=> $("flash").classList.remove("go"), 60);
@@ -763,7 +825,7 @@ $("fallbackBtn").addEventListener("click", ()=> $("fileInput").click());
 $("watermarkBtn").addEventListener("click", ()=>{
   watermarkEnabled = !watermarkEnabled;
   updateWatermarkBtnUI();
-  $("stampPreview").style.display = watermarkEnabled ? "" : "none";
+  $("stampPreview").style.display = watermarkEnabled ? "flex" : "none";
 });
 function updateWatermarkBtnUI(){
   const btn = $("watermarkBtn");
@@ -796,15 +858,67 @@ function processImage(source, w, h, mirrored, cropZoom){
   if(mirrored){ ctx.setTransform(1,0,0,1,0,0); }
   // stempel tanggal oranye khas kamera film — cuma digambar kalau watermark
   // dinyalakan panitia (lihat toggle di Mode Panitia)
-  if(watermarkEnabled){
-    const fs = Math.round(cw * 0.032);
-    ctx.font = "700 " + fs + "px 'Space Mono', monospace";
-    ctx.fillStyle = "#d99080";
-    ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = fs*0.4;
-    ctx.textAlign = "right";
-    ctx.fillText(stampText(), cw - fs, ch - fs);
-  }
+  if(watermarkEnabled) drawMonogramWatermark(ctx, cw, ch);
   return c.toDataURL("image/jpeg", 0.72);
+}
+
+// "Pita monogram" — badge bulat semi-transparan pojok kiri bawah berisi
+// inisial pasangan + tanggal, dipisah garis vertikal tipis.
+function coupleInitials(){
+  const parts = CONFIG.coupleNames.split("&").map(s=>s.trim()).filter(Boolean);
+  if(parts.length < 2) return CONFIG.coupleNames;
+  return parts.map(p=> p.charAt(0).toUpperCase()).join(" & ");
+}
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function drawMonogramWatermark(ctx, cw, ch){
+  const badgeH = Math.round(cw * 0.062);
+  const padX = Math.round(badgeH * 0.42);
+  const gap = Math.round(badgeH * 0.34);
+  const marginX = Math.round(cw * 0.045);
+  const marginY = Math.round(ch * 0.045);
+  const initialsFs = Math.round(badgeH * 0.5);
+  const dateFs = Math.round(badgeH * 0.32);
+  const dateStr = stampText();
+  const initials = coupleInitials();
+
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "left";
+  ctx.font = "italic 700 " + initialsFs + "px 'Fraunces', Georgia, serif";
+  const initialsW = ctx.measureText(initials).width;
+  ctx.font = "700 " + dateFs + "px 'Space Mono', monospace";
+  const dateW = ctx.measureText(dateStr).width;
+
+  const badgeW = padX * 2 + initialsW + gap * 2 + 1 + dateW;
+  const bx = marginX, by = ch - marginY - badgeH;
+
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = badgeH * 0.3;
+  ctx.fillStyle = "rgba(36,26,44,.55)";
+  roundRectPath(ctx, bx, by, badgeW, badgeH, badgeH / 2);
+  ctx.fill();
+  ctx.restore();
+
+  let cx = bx + padX;
+  ctx.font = "italic 700 " + initialsFs + "px 'Fraunces', Georgia, serif";
+  ctx.fillStyle = "#f2b8ee";
+  ctx.fillText(initials, cx, by + badgeH / 2);
+  cx += initialsW + gap;
+
+  ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx, by + badgeH * 0.22); ctx.lineTo(cx, by + badgeH * 0.78); ctx.stroke();
+  cx += gap;
+
+  ctx.font = "700 " + dateFs + "px 'Space Mono', monospace";
+  ctx.fillStyle = "#f0d0c0";
+  ctx.fillText(dateStr, cx, by + badgeH / 2);
 }
 
 async function savePhoto(dataURL){
@@ -872,6 +986,7 @@ function showReview(dataURL){
   $("reviewPreview").classList.add("show");
   $("camBottomNormal").style.display = "none";
   $("camBottomReview").style.display = "flex";
+  pauseCameraForReview();
   history.pushState({ kenanganReview: true }, "");
   reviewHistoryPushed = true;
 }
@@ -888,6 +1003,19 @@ function closeReviewUI(){
   $("reviewPreview").classList.remove("show");
   $("camBottomNormal").style.display = "flex";
   $("camBottomReview").style.display = "none";
+  resumeCameraFromReview();
+}
+// Kamera beneran dipause (bukan cuma ketutup UI doang) selagi tamu lihat hasil
+// jepretan — hemat baterai/CPU HP. Resume otomatis begitu balik ke viewfinder,
+// baik lewat retake maupun setelah konfirmasi (berhasil ataupun gagal).
+function pauseCameraForReview(){
+  if(videoTrack) videoTrack.enabled = false;
+  $("video").pause();
+}
+function resumeCameraFromReview(){
+  if(!stream) return; // lagi di jalur fallback file-input — gak ada stream buat di-resume
+  if(videoTrack) videoTrack.enabled = true;
+  $("video").play().catch(()=>{});
 }
 
 $("shutterBtn").addEventListener("click", async ()=>{
@@ -923,14 +1051,119 @@ $("confirmBtn").addEventListener("click", async ()=>{
 // lalu preview konfirmasi jepretan), baru terakhir keluar dari layar kamera.
 let lightboxHistoryPushed = false;
 
-function openLightbox(url){
-  $("lightboxImg").src = url;
+/* ---------- lightbox: daftar foto + navigasi + zoom ---------- */
+let lightboxList = [];   // semua URL foto yang lagi "dibuka bareng" (1 strip/galeri)
+let lightboxIndex = 0;
+let lbZoom = 1, lbPanX = 0, lbPanY = 0;
+let lbPinchStartDist = null, lbPinchStartZoom = 1;
+let lbDragStart = null;
+let lbLastTapTime = 0;
+
+// urls bisa berupa satu string (kompatibel sama pemanggilan lama) atau array
+// foto satu strip/galeri + index yang diklik, biar bisa geser sebelum/sesudah.
+function openLightbox(urls, index){
+  if(typeof urls === "string"){ urls = [urls]; index = 0; }
+  lightboxList = urls;
+  lightboxIndex = Math.min(Math.max(index || 0, 0), urls.length - 1);
+  renderLightboxImage();
   if(!$("lightbox").classList.contains("show")){
     $("lightbox").classList.add("show");
     history.pushState({ kenanganLightbox: true }, "");
     lightboxHistoryPushed = true;
   }
 }
+function renderLightboxImage(){
+  $("lightboxImg").src = lightboxList[lightboxIndex];
+  resetLightboxZoom();
+  updateLightboxNavUI();
+}
+function updateLightboxNavUI(){
+  const has = lightboxList.length > 1;
+  $("lightboxPrev").style.display = has ? "flex" : "none";
+  $("lightboxNext").style.display = has ? "flex" : "none";
+  $("lightboxPrev").disabled = lightboxIndex <= 0;
+  $("lightboxNext").disabled = lightboxIndex >= lightboxList.length - 1;
+}
+function lightboxGoto(delta){
+  const next = lightboxIndex + delta;
+  if(next < 0 || next >= lightboxList.length) return;
+  lightboxIndex = next;
+  renderLightboxImage();
+}
+$("lightboxPrev").addEventListener("click", ()=> lightboxGoto(-1));
+$("lightboxNext").addEventListener("click", ()=> lightboxGoto(1));
+
+function resetLightboxZoom(){ lbZoom = 1; lbPanX = 0; lbPanY = 0; applyLightboxTransform(); }
+function applyLightboxTransform(){
+  $("lightboxImg").style.transform = "translate(" + lbPanX + "px," + lbPanY + "px) scale(" + lbZoom + ")";
+}
+function clampLightboxPan(){
+  const wrap = $("lightboxImgWrap");
+  const maxX = (wrap.clientWidth * (lbZoom - 1)) / 2;
+  const maxY = (wrap.clientHeight * (lbZoom - 1)) / 2;
+  lbPanX = Math.min(maxX, Math.max(-maxX, lbPanX));
+  lbPanY = Math.min(maxY, Math.max(-maxY, lbPanY));
+}
+function toggleLightboxZoom(){
+  if(lbZoom > 1){ resetLightboxZoom(); }
+  else { lbZoom = 2.5; lbPanX = 0; lbPanY = 0; applyLightboxTransform(); }
+}
+function lbTouchDist(t0, t1){ return Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY); }
+
+// cubit dua jari = zoom; geser satu jari = pan (kalau lagi zoom) atau ganti
+// foto sebelum/sesudah lewat swipe (kalau lagi 1x, gak di-zoom).
+$("lightboxImgWrap").addEventListener("touchstart", (e)=>{
+  if(e.touches.length === 2){
+    lbPinchStartDist = lbTouchDist(e.touches[0], e.touches[1]);
+    lbPinchStartZoom = lbZoom;
+  } else if(e.touches.length === 1){
+    lbDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, panX: lbPanX, panY: lbPanY };
+  }
+}, { passive:true });
+$("lightboxImgWrap").addEventListener("touchmove", (e)=>{
+  if(e.touches.length === 2 && lbPinchStartDist){
+    const factor = lbTouchDist(e.touches[0], e.touches[1]) / lbPinchStartDist;
+    lbZoom = Math.min(4, Math.max(1, lbPinchStartZoom * factor));
+    clampLightboxPan();
+    applyLightboxTransform();
+  } else if(e.touches.length === 1 && lbDragStart && lbZoom > 1){
+    lbPanX = lbDragStart.panX + (e.touches[0].clientX - lbDragStart.x);
+    lbPanY = lbDragStart.panY + (e.touches[0].clientY - lbDragStart.y);
+    clampLightboxPan();
+    applyLightboxTransform();
+  }
+}, { passive:true });
+$("lightboxImgWrap").addEventListener("touchend", (e)=>{
+  if(e.touches.length === 0 && lbDragStart){
+    const end = e.changedTouches[0];
+    const dx = end.clientX - lbDragStart.x, dy = end.clientY - lbDragStart.y;
+    const dist = Math.hypot(dx, dy);
+    if(dist < 10){
+      const now = Date.now();
+      if(now - lbLastTapTime < 320){ toggleLightboxZoom(); lbLastTapTime = 0; }
+      else{ lbLastTapTime = now; }
+    } else if(lbZoom <= 1 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5){
+      lightboxGoto(dx < 0 ? 1 : -1);
+    }
+  }
+  lbDragStart = null;
+  lbPinchStartDist = null;
+});
+// double-click & scroll wheel buat yang pakai mouse/trackpad (desktop)
+$("lightboxImgWrap").addEventListener("dblclick", toggleLightboxZoom);
+$("lightboxImgWrap").addEventListener("wheel", (e)=>{
+  e.preventDefault();
+  lbZoom = Math.min(4, Math.max(1, lbZoom + (e.deltaY > 0 ? -0.15 : 0.15)));
+  clampLightboxPan();
+  applyLightboxTransform();
+}, { passive:false });
+window.addEventListener("keydown", (e)=>{
+  if(!$("lightbox").classList.contains("show")) return;
+  if(e.key === "ArrowLeft") lightboxGoto(-1);
+  else if(e.key === "ArrowRight") lightboxGoto(1);
+  else if(e.key === "Escape") closeLightbox();
+});
+
 // Sama seperti cancelReview() — biarkan popstate yang menutup UI-nya, jangan
 // diubah dulu di sini, supaya tombol X dan tombol back HP konsisten satu jalur.
 function closeLightbox(){
@@ -942,6 +1175,7 @@ function closeLightboxUI(){
   $("lightbox").classList.remove("show");
   $("lightboxImg").src = "";
   lightboxHistoryPushed = false;
+  resetLightboxZoom();
 }
 window.addEventListener("popstate", ()=>{
   if($("lightbox").classList.contains("show")){
@@ -974,7 +1208,12 @@ window.addEventListener("resize", updateStripFade);
 function addThumb(strip, url){
   const im = document.createElement("img");
   im.src = url;
-  im.addEventListener("click", ()=> openLightbox(url));
+  // ambil daftar+urutan dari thumbnail yang ada di strip yang sama saat itu juga
+  // (bukan cuma foto ini sendiri), biar di lightbox bisa geser sebelum/sesudahnya.
+  im.addEventListener("click", ()=>{
+    const imgs = [...strip.querySelectorAll("img")];
+    openLightbox(imgs.map(i => i.src), imgs.indexOf(im));
+  });
   strip.appendChild(im);
   if(strip === $("myStrip")) updateStripFade();
 }
@@ -1022,9 +1261,10 @@ async function renderGallery(){
   try{
     const d = await gasGet({ action:"gallery", limit:"60" });
     const items = (d && d.ok) ? d.items : [];
-    items.forEach(it=>{
+    const urls = items.map(it => it.url);
+    items.forEach((it, idx)=>{
       const im=document.createElement("img"); im.loading="lazy"; im.src=it.url;
-      im.addEventListener("click", ()=> openLightbox(it.url));
+      im.addEventListener("click", ()=> openLightbox(urls, idx));
       g.appendChild(im);
     });
     $("galNote").textContent = items.length
