@@ -119,8 +119,40 @@
   .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
   .flash.go{opacity:.9;transition:none}
   .stampline{position:absolute;right:16px;bottom:16px;color:var(--stamp);font-size:13px;font-weight:700;text-shadow:0 0 6px rgba(0,0,0,.6)}
-  .uploadline{position:absolute;left:16px;bottom:16px;color:var(--paper);font-size:11px;letter-spacing:.1em;background:rgba(25,21,18,.7);border:1px solid var(--line);border-radius:8px;padding:4px 10px;opacity:0;transition:opacity .2s}
-  .uploadline.show{opacity:1}
+  /* ---------- overlay upload: backdrop gelap + kartu progress di tengah ---------- */
+  .upload-overlay{
+    position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,8,7,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  .upload-overlay.show{opacity:1;pointer-events:auto}
+  .upload-card{
+    width:200px;padding:26px 24px 22px;border-radius:20px;text-align:center;
+    background:linear-gradient(165deg,var(--film-dark),var(--film-black) 75%);
+    border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.5);
+  }
+  .upload-ring{
+    width:38px;height:38px;margin:0 auto 14px;border-radius:50%;
+    border:3px solid rgba(251,243,250,.18);border-top-color:var(--amber);
+    animation:upload-spin .8s linear infinite;
+  }
+  @keyframes upload-spin{to{transform:rotate(360deg)}}
+  .upload-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-dim);font-weight:700}
+  .upload-bar-track{
+    width:100%;height:8px;margin-top:14px;border-radius:6px;
+    background:rgba(251,243,250,.14);overflow:hidden;position:relative;
+  }
+  .upload-bar-fill{
+    display:block;height:100%;width:0%;border-radius:6px;position:relative;overflow:hidden;
+    background:linear-gradient(90deg,var(--amber),#f2b8ee);transition:width .2s ease-out;
+  }
+  .upload-bar-fill::after{ /* efek shine yang bergerak, kesan "aktif ngerjain sesuatu" */
+    content:"";position:absolute;inset:0;background-size:200% 100%;
+    background-image:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);
+    animation:upload-shine 1.1s linear infinite;
+  }
+  @keyframes upload-shine{from{background-position:150% 0}to{background-position:-150% 0}}
+  .upload-percent{margin-top:10px;font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--amber)}
   /* ---------- zoom & fokus ---------- */
   .zoom-hud{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -142,7 +174,11 @@
     opacity:0;transform:scale(1.3);transition:opacity .15s,transform .25s;pointer-events:none;z-index:5;
   }
   .focus-ring.show{opacity:1;transform:scale(1)}
-  .roundbtn.torch-on{background:rgba(189,82,201,.18);border-color:rgba(189,82,201,.55);color:var(--amber)}
+  /* mode flash: off (polos) / auto (outline + badge "A") / on (isi solid) — flash cuma
+     benar-benar menyala sesaat pas jepret, bukan senter nyala terus (lihat captureWithFlash). */
+  .roundbtn.flash-auto{border-color:rgba(189,82,201,.55);color:var(--amber)}
+  .roundbtn.flash-on{background:rgba(189,82,201,.18);border-color:rgba(189,82,201,.55);color:var(--amber)}
+  .flash-badge{position:absolute;bottom:3px;right:4px;font-size:8px;font-weight:800;line-height:1;font-family:'Space Mono',monospace}
   .cam-fallback{
     position:absolute;inset:0;display:none;flex-direction:column;gap:14px;
     align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--paper-dim);font-size:12.5px;
@@ -157,7 +193,7 @@
   .cam-bottom{padding:16px 18px calc(20px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:14px}
   .cam-bottom.review-actions{justify-content:center;gap:56px}
   .roundbtn{
-    width:52px;height:52px;border-radius:50%;border:1px solid var(--line);
+    position:relative;width:52px;height:52px;border-radius:50%;border:1px solid var(--line);
     background:var(--film-dark);color:var(--paper);font-size:19px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
@@ -262,7 +298,14 @@
     <span class="vf-corner tl"></span><span class="vf-corner tr"></span>
     <span class="vf-corner bl"></span><span class="vf-corner br"></span>
     <span class="stampline" id="stampPreview"></span>
-    <span class="uploadline" id="uploadLine">Menyimpan…</span>
+    <div class="upload-overlay" id="uploadLine">
+      <div class="upload-card">
+        <div class="upload-ring" aria-hidden="true"></div>
+        <div class="upload-label" id="uploadLabel">Menyimpan…</div>
+        <div class="upload-bar-track"><div class="upload-bar-fill" id="uploadBarFill"></div></div>
+        <div class="upload-percent" id="uploadPercent">0%</div>
+      </div>
+    </div>
     <div class="flash" id="flash"></div>
     <div class="focus-ring" id="focusRing" aria-hidden="true"></div>
     <span class="zoom-hud" id="zoomHud">1.0x</span>
@@ -285,8 +328,9 @@
     </div>
     <button class="shutter" id="shutterBtn" aria-label="Ambil foto"></button>
     <div class="cam-bottom-side">
-      <button class="roundbtn" id="torchBtn" title="Lampu kilat" aria-label="Lampu kilat" style="display:none">
+      <button class="roundbtn" id="flashBtn" title="Mode flash: Mati" aria-label="Mode flash" style="display:none">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        <span class="flash-badge" id="flashBadge"></span>
       </button>
       <button class="roundbtn" id="flipBtn" title="Balik kamera" aria-label="Balik kamera">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
@@ -418,6 +462,24 @@ async function gasPost(payload){
   });
   return res.json();
 }
+// Sama seperti gasPost, tapi lewat XHR supaya bisa mantau progress upload
+// beneran (fetch tidak punya event progress bawaan) — dipakai khusus buat
+// kirim foto, karena payload base64-nya lumayan besar dan ini yang bikin
+// loading bar isinya benar-benar mengikuti proses upload, bukan animasi kosong.
+function gasPostWithProgress(payload, onProgress){
+  return new Promise((resolve, reject)=>{
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", CONFIG.gasUrl);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+    xhr.upload.onprogress = (e)=>{ if(e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
+    xhr.onload = ()=>{
+      try{ resolve(JSON.parse(xhr.responseText)); }
+      catch(e){ reject(e); }
+    };
+    xhr.onerror = ()=> reject(new Error("network"));
+    xhr.send(JSON.stringify(payload));
+  });
+}
 async function gasGet(params){
   const res = await fetch(CONFIG.gasUrl + "?" + new URLSearchParams(params).toString());
   return res.json();
@@ -466,12 +528,14 @@ let stream = null, facing = "environment";
    getCapabilities().zoom. Kalau tidak ada, fallback ke "digital zoom": video
    di-scale pakai CSS var --zoomScale, lalu saat capture di-crop proporsional
    supaya hasil foto sama persis dengan yang terlihat di viewfinder.
-   Torch/senter juga dideteksi lewat capabilities — tombolnya disembunyikan
-   total kalau tidak didukung (mis. iPhone Safari). */
+   Flash juga dideteksi lewat capabilities.torch — tombolnya disembunyikan
+   total kalau tidak didukung (mis. iPhone Safari). Beda dari senter biasa:
+   flash di sini cuma menyala SESAAT pas jepret (mode Nyala), atau menyala
+   sesaat kalau frame-nya gelap (mode Auto) — lihat captureWithFlash(). */
 let videoTrack = null;
 let usingNativeZoom = false;
 let zoomMin = 1, zoomMax = 3, zoomLevel = 1;
-let torchSupported = false, torchOn = false;
+let flashSupported = false, flashMode = "off"; // "off" | "auto" | "on"
 let pinchStartDist = null, pinchStartZoom = 1;
 
 // Tidak ada lagi tombol "kembali" di layar kamera — tombol/gesture back HP
@@ -512,10 +576,16 @@ async function startStream(){
   }catch(e){
     $("camFallback").style.display = "flex";
     $("zoomPresets").style.display = "none";
-    $("torchBtn").style.display = "none";
+    $("flashBtn").style.display = "none";
   }
 }
-function stopStream(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; } videoTrack = null; }
+function stopStream(){
+  // jaga-jaga: kalau flash sempat nyala pas stream diputus di tengah jepretan,
+  // pastikan mati dulu sebelum track-nya benar-benar dilepas.
+  if(videoTrack){ try{ videoTrack.applyConstraints({ advanced:[{ torch:false }] }); }catch(e){} }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; }
+  videoTrack = null;
+}
 
 // Deteksi kemampuan zoom/torch kamera aktif, lalu siapkan UI-nya. Dipanggil
 // tiap kali stream baru berhasil dibuka (termasuk setelah balik kamera).
@@ -531,10 +601,10 @@ function setupTrackFeatures(){
   renderZoomPresets();
   applyZoom(zoomMin, true);
 
-  torchSupported = !!(caps.torch) && facing === "environment";
-  torchOn = false;
-  $("torchBtn").style.display = torchSupported ? "flex" : "none";
-  $("torchBtn").classList.remove("torch-on");
+  flashSupported = !!(caps.torch) && facing === "environment";
+  flashMode = "off";
+  $("flashBtn").style.display = flashSupported ? "flex" : "none";
+  updateFlashUI();
 }
 
 function renderZoomPresets(){
@@ -611,13 +681,57 @@ function showFocusRing(x, y){
   showFocusRing._t = setTimeout(()=> ring.classList.remove("show"), 650);
 }
 
-$("torchBtn").addEventListener("click", async ()=>{
-  if(!videoTrack || !torchSupported) return;
-  const next = !torchOn;
-  try{ await videoTrack.applyConstraints({ advanced:[{ torch: next }] }); torchOn = next; }
-  catch(e){ /* biarkan torchOn apa adanya kalau browser menolak */ }
-  $("torchBtn").classList.toggle("torch-on", torchOn);
+// Siklus tombol flash: Mati -> Auto -> Nyala -> Mati (persis mode flash kamera bawaan hp).
+$("flashBtn").addEventListener("click", ()=>{
+  if(!flashSupported) return;
+  flashMode = flashMode === "off" ? "auto" : flashMode === "auto" ? "on" : "off";
+  updateFlashUI();
 });
+function updateFlashUI(){
+  const btn = $("flashBtn"), badge = $("flashBadge");
+  const labels = { off:"Mati", auto:"Auto", on:"Nyala" };
+  btn.classList.remove("flash-auto", "flash-on");
+  if(flashMode === "on") btn.classList.add("flash-on");
+  else if(flashMode === "auto") btn.classList.add("flash-auto");
+  badge.textContent = flashMode === "auto" ? "A" : "";
+  btn.title = "Mode flash: " + labels[flashMode];
+}
+
+// Cek gelap-terangnya frame video saat ini (dipakai mode Auto) dengan
+// men-downscale ke 16x9px terus ambil rata-rata luminance-nya — jauh lebih
+// ringan daripada menganalisis frame ukuran penuh.
+function measureBrightness(v){
+  try{
+    const sw = 16, sh = 9;
+    const c = document.createElement("canvas"); c.width = sw; c.height = sh;
+    const ctx = c.getContext("2d");
+    ctx.drawImage(v, 0, 0, sw, sh);
+    const data = ctx.getImageData(0, 0, sw, sh).data;
+    let sum = 0;
+    for(let i=0;i<data.length;i+=4){ sum += data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114; }
+    return sum / (sw*sh); // 0 (gelap) .. 255 (terang)
+  }catch(e){ return 255; } // gagal baca frame -> anggap terang, jangan maksa nyalain flash
+}
+function shouldFireFlash(v){
+  if(!flashSupported) return false;
+  if(flashMode === "on") return true;
+  if(flashMode === "off") return false;
+  return measureBrightness(v) < 90; // ambang gelap, mode Auto
+}
+
+// Nyalakan flash sesaat sebelum & selama jepretan (bukan senter terus-terusan),
+// beri jeda dikit biar exposure kamera sempat menyesuaikan ke cahaya baru.
+async function captureWithFlash(v){
+  const fire = shouldFireFlash(v);
+  if(fire){
+    try{ await videoTrack.applyConstraints({ advanced:[{ torch:true }] }); await new Promise(r=>setTimeout(r,220)); }
+    catch(e){}
+  }
+  $("flash").classList.add("go"); setTimeout(()=> $("flash").classList.remove("go"), 60);
+  const shot = processImage(v, v.videoWidth, v.videoHeight, facing==="user", usingNativeZoom ? 1 : zoomLevel);
+  if(fire){ videoTrack.applyConstraints({ advanced:[{ torch:false }] }).catch(()=>{}); }
+  return shot;
+}
 
 // Sebagian HP Android membekukan gambar kamera belakang (hitam) sampai tab
 // sempat disembunyikan lalu ditampilkan lagi. Trigger ulang stream otomatis
@@ -665,9 +779,13 @@ function processImage(source, w, h, mirrored, cropZoom){
 }
 
 async function savePhoto(dataURL){
-  $("uploadLine").classList.add("show");
+  showUploadProgress(0);
   try{
-    const result = await gasPost({ action:"photo", guestId: me.id, guestName: me.name, photo: dataURL });
+    const result = await gasPostWithProgress(
+      { action:"photo", guestId: me.id, guestName: me.name, photo: dataURL },
+      (frac)=> setUploadProgress(frac)
+    );
+    setUploadProgress(1);
     if(!result || !result.ok){
       if(result && typeof result.count === "number"){ me.count = result.count; saveMe(); }
       throw new Error((result && result.error) || "failed");
@@ -679,8 +797,23 @@ async function savePhoto(dataURL){
     updateCounter();
     if(me.count >= CONFIG.shotsPerGuest){ setTimeout(leaveCamera, 700); }
   } finally {
-    $("uploadLine").classList.remove("show");
+    hideUploadProgress();
   }
+}
+function showUploadProgress(frac){
+  $("uploadLabel").textContent = "Menyimpan…";
+  setUploadProgress(frac);
+  $("uploadLine").classList.add("show");
+}
+function setUploadProgress(frac){
+  const pct = Math.round(Math.min(1, Math.max(0, frac)) * 100);
+  $("uploadBarFill").style.width = pct + "%";
+  $("uploadPercent").textContent = pct + "%";
+}
+function hideUploadProgress(){
+  $("uploadLine").classList.remove("show");
+  // reset progress abis overlay-nya selesai fade-out, biar jepretan berikutnya mulai dari 0% lagi
+  setTimeout(()=>{ $("uploadBarFill").style.width = "0%"; $("uploadPercent").textContent = "0%"; }, 200);
 }
 
 /* ---------- konfirmasi hasil jepretan (mirip preview kirim foto WhatsApp) ---------- */
@@ -711,12 +844,13 @@ function closeReviewUI(){
   $("camBottomReview").style.display = "none";
 }
 
-$("shutterBtn").addEventListener("click", ()=>{
+$("shutterBtn").addEventListener("click", async ()=>{
   if(me.count >= CONFIG.shotsPerGuest) return;
   const v = $("video");
   if(!stream || !v.videoWidth){ $("fileInput").click(); return; }
-  $("flash").classList.add("go"); setTimeout(()=> $("flash").classList.remove("go"), 60);
-  showReview(processImage(v, v.videoWidth, v.videoHeight, facing==="user", usingNativeZoom ? 1 : zoomLevel));
+  $("shutterBtn").disabled = true;
+  try{ showReview(await captureWithFlash(v)); }
+  finally{ $("shutterBtn").disabled = me.count >= CONFIG.shotsPerGuest; }
 });
 
 $("fileInput").addEventListener("change", (ev)=>{
